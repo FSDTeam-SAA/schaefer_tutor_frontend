@@ -16,8 +16,7 @@ model User {
   image         String?
   phone         String?
   profileImage  String?
-  profileType   ProfileType     @default(student)
-  role          Role            @default(user)
+  role   Role     @default(student)
   accounts      Account[]
   sessions      Session[]
   // Optional for WebAuthn support
@@ -27,15 +26,13 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
-enum ProfileType {
+enum Role {
   student
   teacher
+  admin
 }
 
-enum Role {
-  admin
-  user
-}
+
 
 model Account {
   id                String  @id @default(auto()) @map("_id") @db.ObjectId

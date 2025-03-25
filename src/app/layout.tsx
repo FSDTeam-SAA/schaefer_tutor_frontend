@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Toaster } from "sonner";
@@ -20,11 +21,14 @@ export const metadata: Metadata = {
     "Schaefer Tutor - Your go-to platform for effective and personalized learning.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+
+  console.log(session);
   return (
     <html lang="en">
       <body
