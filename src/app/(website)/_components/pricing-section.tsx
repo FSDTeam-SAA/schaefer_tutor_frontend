@@ -15,6 +15,7 @@ export function PricingSection() {
               { text: "Flexible booking" },
               { text: "Individual appointment selection" },
               { text: "No contract" },
+              { text: "No contract" },
             ]}
           />
 
