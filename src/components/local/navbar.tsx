@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const Navbar = () => {
   return (
@@ -12,7 +13,9 @@ const Navbar = () => {
           </div>
           <div className="flex items-center space-x-4">
             <Button effect="gooeyLeft">Free trial lesson</Button>
-            <Button variant="outline">Login</Button>
+            <Button variant="outline" asChild>
+              <Link href="/login">Login</Link>
+            </Button>
           </div>
         </div>
       </div>
