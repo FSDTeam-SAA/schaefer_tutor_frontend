@@ -1,17 +1,11 @@
-"use client";
 import Navbar from "@/components/local/navbar";
-import { useState } from "react";
+import FreeTrialForm from "./_components/free-trial-form";
 import Hero from "./_components/hero";
 import { PricingSection } from "./_components/pricing-section";
 import Subjects from "./_components/subjects";
 import WhySchafer from "./_components/why-schafer";
 
 const NachhilfeLandingPage = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [subject, setSubject] = useState("Mathematik");
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white font-sans">
       {/* Navigation */}
@@ -30,97 +24,8 @@ const NachhilfeLandingPage = () => {
       <PricingSection />
 
       {/* Contact Form */}
-      <div id="contact-form" className="py-12 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white shadow-xl rounded-lg overflow-hidden">
-            <div className="p-6 md:p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                Fordere jetzt deine kostenlose Probestunde an!
-              </h2>
-              <form className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Vollständiger Name
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      E-Mail
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="phone"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Telefonnummer
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="subject"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Fach
-                    </label>
-                    <select
-                      id="subject"
-                      value={subject}
-                      onChange={(e) => setSubject(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option>Mathematik</option>
-                      <option>Deutsch</option>
-                      <option>Englisch</option>
-                      <option>Physik</option>
-                      <option>Chemie</option>
-                      <option>Biologie</option>
-                      <option>Geschichte</option>
-                      <option>Wirtschaft</option>
-                    </select>
-                  </div>
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-md font-medium"
-                >
-                  Probestunde anfordern
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
+      <div className="w-full bg-white py-20">
+        <FreeTrialForm />
       </div>
 
       {/* Testimonials */}
