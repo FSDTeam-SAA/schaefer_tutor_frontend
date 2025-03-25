@@ -1,5 +1,3 @@
-import Footer from "@/components/local/footer";
-import Navbar from "@/components/local/navbar";
 import FreeTrialForm from "./_components/free-trial-form";
 import Hero from "./_components/hero";
 import { PricingSection } from "./_components/pricing-section";
@@ -11,7 +9,6 @@ const NachhilfeLandingPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white font-sans">
       {/* Navigation */}
-      <Navbar />
 
       {/* Hero Section + About Us Combined */}
       <Hero />
@@ -34,7 +31,6 @@ const NachhilfeLandingPage = () => {
       <Testmonial />
 
       {/* Footer */}
-      <Footer />
     </div>
   );
 };
