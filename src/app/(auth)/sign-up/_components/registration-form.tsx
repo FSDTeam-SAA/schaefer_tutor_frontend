@@ -19,8 +19,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
+import { RegistrationAction } from "@/action/authentication";
 import { PasswordInput } from "@/components/ui/password-input";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export const registrationSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -33,6 +36,8 @@ export default function RegistrationForm() {
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState<true | false>(false);
 
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof registrationSchema>>({
     resolver: zodResolver(registrationSchema),
   });
@@ -43,9 +48,25 @@ export default function RegistrationForm() {
     };
   }, []);
 
-  function onSubmit(values: z.infer<typeof registrationSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof registrationSchema>) {
+    startTransition(() => {
+      RegistrationAction(values)
+        .then((res) => {
+          if (!res.success) {
+            toast.error(res.message || "Registration failed.");
+          } else {
+            toast.success("Registration successful!");
+            router.push(res.redirect as string); // 👈 Use router to navigate
+          }
+        })
+        .catch((err) => {
+          toast.error("Something went wrong.");
+          console.error(err);
+        });
+    });
   }
+
+  const isLoading = isPending || loading;
 
   return (
     <div className="mt-[40px]">
@@ -64,7 +85,7 @@ export default function RegistrationForm() {
                   Full Name
                 </FormLabel>
                 <FormControl>
-                  <PasswordInput
+                  <Input
                     placeholder="Enter Your Name "
                     {...field}
                     className="h-[48px] rounded-[10px] border-[1px] border-[#F4F0EB] font-inter"
@@ -85,7 +106,7 @@ export default function RegistrationForm() {
                   Phone
                 </FormLabel>
                 <FormControl>
-                  <PasswordInput
+                  <Input
                     placeholder="Enter Phone "
                     {...field}
                     className="h-[48px] rounded-[10px] border-[1px] border-[#F4F0EB] font-inter"
@@ -142,13 +163,11 @@ export default function RegistrationForm() {
             type="submit"
             className="w-full h-[40px]"
             effect="gooeyLeft"
-            disabled={loading || isPending}
+            disabled={isLoading}
+            variant={isLoading ? "outline" : "default"}
           >
+            {isLoading && <Loader2 className=" mr-2  animate-spin" />}
             Registration
-            {loading ||
-              (isPending && (
-                <Loader2 className="absolute right-5 animate-spin" />
-              ))}
           </Button>
         </form>
       </Form>

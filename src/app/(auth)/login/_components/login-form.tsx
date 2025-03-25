@@ -17,21 +17,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 
+import { LoginAction } from "@/action/authentication";
 import { PasswordInput } from "@/components/ui/password-input";
+import { loginSchema, LoginValues } from "@/schemas/schema";
 import Link from "next/link";
-
-export const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
-  password: z.string(),
-});
+import { toast } from "sonner";
 
 export default function LoginForm() {
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState<true | false>(false);
 
-  const form = useForm<z.infer<typeof loginSchema>>({
+  const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
   });
 
@@ -41,9 +38,19 @@ export default function LoginForm() {
     };
   }, []);
 
-  function onSubmit(values: z.infer<typeof loginSchema>) {
-    console.log(values);
+  function onSubmit(values: LoginValues) {
+    startTransition(() =>
+      LoginAction(values).then((res) => {
+        if (!res.success) {
+          toast.error(res.message);
+        } else {
+          toast.success("Login successful");
+        }
+      })
+    );
   }
+
+  const isLoading = loading || isPending;
 
   return (
     <div className="mt-[40px]">
@@ -108,13 +115,11 @@ export default function LoginForm() {
             type="submit"
             className="w-full h-[40px]"
             effect="gooeyLeft"
-            disabled={loading || isPending}
+            disabled={isLoading}
+            variant={isLoading ? "outline" : "default"}
           >
-            Log In
-            {loading ||
-              (isPending && (
-                <Loader2 className="absolute right-5 animate-spin" />
-              ))}
+            {isLoading && <Loader2 className="absolute right-5 animate-spin" />}
+            {isLoading ? "Please wait..." : "Log In"}
           </Button>
         </form>
       </Form>
