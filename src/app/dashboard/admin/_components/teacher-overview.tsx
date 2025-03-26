@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -46,7 +47,10 @@ export default async function TeacherOverview() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">Teacher Overview</h2>
-        <AddTeacherDialog subjects={subjects ?? []} />
+        <AddTeacherDialog
+          subjects={subjects ?? []}
+          trigger={<Button effect="gooeyRight">Add new teacher</Button>}
+        />
       </div>
       <div className="rounded-md border">
         <Table>

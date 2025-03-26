@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { TeacherRegistrationAction } from "@/action/authentication";
 import {
   Dialog,
   DialogContent,
@@ -28,16 +28,22 @@ import {
   MultiSelectorTrigger,
 } from "@/components/ui/multi-select";
 import { PasswordInput } from "@/components/ui/password-input";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { teacherCreateSchema, TeacherCreateSchemaType } from "@/schemas/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Subject } from "@prisma/client";
+import { ReactNode, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 interface Props {
   subjects: Subject[];
+  trigger: ReactNode;
 }
 
-export function AddTeacherDialog({ subjects }: Props) {
+export function AddTeacherDialog({ subjects, trigger }: Props) {
+  const [open, setOpen] = useState(false);
+  const [pending, startTransition] = useTransition();
   const form = useForm<TeacherCreateSchemaType>({
     resolver: zodResolver(teacherCreateSchema),
     defaultValues: {
@@ -46,13 +52,26 @@ export function AddTeacherDialog({ subjects }: Props) {
   });
 
   function onSubmit(values: TeacherCreateSchemaType) {
-    console.log(values);
+    startTransition(() => {
+      TeacherRegistrationAction(values)
+        .then((res) => {
+          if (!res.success) {
+            toast.error(res.message);
+          } else {
+            toast.success(res.message);
+          }
+        })
+        .catch((err) => {
+          toast.error(err.message);
+        })
+        .finally(() => {
+          setOpen(false);
+        });
+    });
   }
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button effect="gooeyRight">Add new teacher</Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={(v) => setOpen(v)}>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add new teacher</DialogTitle>
@@ -62,7 +81,7 @@ export function AddTeacherDialog({ subjects }: Props) {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             <FormField
               control={form.control}
               name="name"
@@ -141,7 +160,7 @@ export function AddTeacherDialog({ subjects }: Props) {
               )}
             />
             <DialogFooter className="mt-5">
-              <Button type="submit">Create teacher</Button>
+              <SubmitButton text="Add Teacher" pending={pending} />
             </DialogFooter>
           </form>
         </Form>
