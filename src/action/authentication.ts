@@ -1,7 +1,9 @@
 "use server";
+import { signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { loginSchema, LoginValues, registrationSchema } from "@/schemas/schema";
 import bcrypt from "bcryptjs";
+import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -50,9 +52,8 @@ export async function RegistrationAction(
 export async function LoginAction(data: LoginValues) {
   const validationResult = loginSchema.safeParse(data);
 
-  console.log("server clicked");
   if (!validationResult.success) {
-    return { errors: validationResult.error.format() };
+    return { success: false, message: validationResult.error.message };
   }
 
   const validatedData = validationResult.data;
@@ -60,28 +61,55 @@ export async function LoginAction(data: LoginValues) {
   // Check if the user exists
   const user = await prisma.user.findFirst({
     where: {
-      email: validatedData.email,
+      email: validatedData.email as string,
     },
   });
 
   if (!user) {
     return {
       success: false,
-      message: "No account found with this email.",
+      message: "User Not Found!",
     };
   }
 
   // Verify the password
   const isPasswordValid = await bcrypt.compare(
-    validatedData.password,
+    validatedData.password as string,
     user.password
   );
 
   if (!isPasswordValid) {
     return {
       success: false,
-      message: "Incorrect password. Please try again.",
+      message: "Password mismatch!",
     };
+  }
+
+  try {
+    await signIn("credentials", {
+      redirectTo: "/",
+      email: validatedData.email,
+      password: validatedData.password,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return {
+            success: false,
+            message: "Invalid credentials!",
+          };
+
+        default:
+          return {
+            success: false,
+            message: "Something went wrong!",
+          };
+      }
+    }
+
+    throw error;
   }
 
   // You can implement session handling or JWT generation here

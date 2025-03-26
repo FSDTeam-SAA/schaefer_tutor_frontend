@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     "Schaefer Tutor - Your go-to platform for effective and personalized learning.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
