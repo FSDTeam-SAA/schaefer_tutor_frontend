@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/lib/require-user";
 import { SubjectSchemaType } from "@/schemas/schema";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -11,6 +12,14 @@ const subjectSchema = z.object({
 
 export async function CreateSubjectAction(values: SubjectSchemaType) {
   const submissionValue = subjectSchema.safeParse(values);
+  const session = await requireUser();
+
+  if (!session) {
+    return {
+      success: false,
+      message: "Unauthorized: User session is required",
+    };
+  }
 
   if (!submissionValue.success) {
     return {
@@ -42,6 +51,15 @@ export async function CreateSubjectAction(values: SubjectSchemaType) {
 
 export async function EditSubjectAction(id: string, values: SubjectSchemaType) {
   const submissionValue = subjectSchema.safeParse(values);
+
+  const session = await requireUser();
+
+  if (!session) {
+    return {
+      success: false,
+      message: "Unauthorized: User session is required",
+    };
+  }
 
   if (!submissionValue.success) {
     return {
@@ -87,6 +105,15 @@ export async function EditSubjectAction(id: string, values: SubjectSchemaType) {
 }
 
 export async function DeleteSubjectAction(id: string) {
+  const session = await requireUser();
+
+  if (!session) {
+    return {
+      success: false,
+      message: "Unauthorized: User session is required",
+    };
+  }
+
   try {
     // Find the subject by id first
     const existingSubject = await prisma.subject.findUnique({

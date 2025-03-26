@@ -52,11 +52,13 @@ export function AddSubjectDialog({ initialData, trigger }: Props) {
             } else {
               form.reset();
               toast.success(res.message);
-              setOpen(false);
             }
           })
           .catch((err) => {
             toast.error(err.message);
+          })
+          .finally(() => {
+            setOpen(false);
           });
       });
     } else {

@@ -24,11 +24,13 @@ const SubjectPill = ({ data, isEdit }: Props) => {
             toast.error(res.message);
           } else {
             toast.success(res.message);
-            setOpen(false);
           }
         })
         .catch((err) => {
           toast.error(err.message);
+        })
+        .finally(() => {
+          setOpen(false);
         });
     });
   };
