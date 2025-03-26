@@ -85,3 +85,37 @@ export async function EditSubjectAction(id: string, values: SubjectSchemaType) {
     };
   }
 }
+
+export async function DeleteSubjectAction(id: string) {
+  try {
+    // Find the subject by id first
+    const existingSubject = await prisma.subject.findUnique({
+      where: { id },
+    });
+
+    if (!existingSubject) {
+      return {
+        success: false,
+        message: "Subject not found",
+      };
+    }
+
+    // Delete the subject
+    await prisma.subject.delete({
+      where: { id },
+    });
+
+    revalidatePath("/dashboard/admin");
+
+    return {
+      success: true,
+      message: "Subject deleted successfully",
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+}
