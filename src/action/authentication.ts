@@ -9,6 +9,7 @@ import {
 } from "@/schemas/schema";
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -156,11 +157,95 @@ export async function TeacherRegistrationAction(
         email,
         password: hashedPassword,
         role: "teacher",
-        subjectIds: validatedData.subjectids,
+        subjects: validatedData.subjectids,
       },
     });
 
+    revalidatePath("/dashboard/admin");
+
     return { success: true, message: "Teacher Added successful!" };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    return { success: false, message: err.message };
+  }
+}
+
+export async function TeacherEditAction(
+  data: z.infer<typeof teacherCreateSchema>
+) {
+  const validationResult = teacherCreateSchema.safeParse(data);
+
+  if (!validationResult.success) {
+    return { errors: validationResult.error.format() };
+  }
+
+  const validatedData = validationResult.data;
+
+  // Normalize email
+  const email = validatedData.email.toLowerCase();
+
+  try {
+    // Check if the teacher exists
+    const existingTeacher = await prisma.user.findUnique({
+      where: { email: validatedData.email },
+    });
+
+    if (!existingTeacher) {
+      return { success: false, message: "Teacher not found." };
+    }
+
+    // Check if the email is being changed and if it already exists for another user
+    if (email !== existingTeacher.email) {
+      const emailExists = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (emailExists) {
+        return { success: false, message: "Email is already in use." };
+      }
+    }
+
+    const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+
+    // Perform the update in the database
+    await prisma.user.update({
+      where: { email: validatedData.email },
+      data: {
+        name: validatedData.name,
+        password: hashedPassword,
+        subjects: validatedData.subjectids,
+      },
+    });
+
+    revalidatePath("/dashboard/admin");
+
+    return { success: true, message: "Teacher updated successfully!" };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    return { success: false, message: err.message };
+  }
+}
+
+export async function RemoveTeacher(id: string) {
+  try {
+    // Check if the teacher exists
+    const existingTeacher = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!existingTeacher) {
+      return { success: false, message: "Teacher not found." };
+    }
+
+    // Delete the teacher from the database
+    await prisma.user.delete({
+      where: { id },
+    });
+
+    // Revalidate the dashboard path to reflect changes
+    revalidatePath("/dashboard/admin");
+
+    return { success: true, message: "Teacher removed successfully!" };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     return { success: false, message: err.message };

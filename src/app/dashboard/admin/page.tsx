@@ -1,7 +1,7 @@
 import DashboardNav from "@/components/local/dashboard-nav";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SubjectContainer from "./_components/subjects/subject-container";
-import TeacherOverview from "./_components/teacher-overview";
+import TeacherOverview from "./_components/teacher/teacher-overview";
 export default function Dashboard() {
   return (
     <div>
