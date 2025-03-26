@@ -6,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { prisma } from "@/lib/prisma";
 import { AddTeacherDialog } from "./add-teacher-dialog";
 export interface Teacher {
   id: string;
@@ -39,12 +40,13 @@ export const teachers: Teacher[] = [
   },
 ];
 
-export function TeacherOverview() {
+export default async function TeacherOverview() {
+  const subjects = await prisma.subject.findMany();
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">Teacher Overview</h2>
-        <AddTeacherDialog />
+        <AddTeacherDialog subjects={subjects ?? []} />
       </div>
       <div className="rounded-md border">
         <Table>

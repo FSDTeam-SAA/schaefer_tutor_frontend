@@ -18,3 +18,12 @@ export const subjectSchema = z.object({
   name: z.string().min(2, "Subject name must be at least 2 characters"),
 });
 export type SubjectSchemaType = z.infer<typeof subjectSchema>;
+
+export const teacherCreateSchema = z.object({
+  name: z.string().min(1),
+  email: z.string(),
+  password: z.string(),
+  subjectids: z.array(z.string()).nonempty("Please at least one item"),
+});
+
+export type TeacherCreateSchemaType = z.infer<typeof teacherCreateSchema>;

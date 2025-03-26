@@ -35,6 +35,8 @@ export async function CreateSubjectAction(values: SubjectSchemaType) {
       },
     });
 
+    revalidatePath("/dashboard/admin");
+
     return {
       success: true,
       message: "Subject Added Successfully",

@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,10 +10,44 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  MultiSelector,
+  MultiSelectorContent,
+  MultiSelectorInput,
+  MultiSelectorItem,
+  MultiSelectorList,
+  MultiSelectorTrigger,
+} from "@/components/ui/multi-select";
+import { PasswordInput } from "@/components/ui/password-input";
+import { teacherCreateSchema, TeacherCreateSchemaType } from "@/schemas/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Subject } from "@prisma/client";
+import { useForm } from "react-hook-form";
 
-export function AddTeacherDialog() {
+interface Props {
+  subjects: Subject[];
+}
+
+export function AddTeacherDialog({ subjects }: Props) {
+  const form = useForm<TeacherCreateSchemaType>({
+    resolver: zodResolver(teacherCreateSchema),
+    defaultValues: {
+      subjectids: [],
+    },
+  });
+
+  function onSubmit(values: TeacherCreateSchemaType) {
+    console.log(values);
+  }
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -25,29 +61,90 @@ export function AddTeacherDialog() {
             done.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input id="name" className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="email" className="text-right">
-              Email
-            </Label>
-            <Input id="email" type="email" className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="subjects" className="text-right">
-              Subjects
-            </Label>
-            <Input id="subjects" className="col-span-3" />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit">Save teacher</Button>
-        </DialogFooter>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter Name" type="" {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter email" type="email" {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <PasswordInput placeholder="Password" {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="subjectids"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Subject</FormLabel>
+                  <FormControl>
+                    <MultiSelector
+                      values={field.value}
+                      onValuesChange={field.onChange}
+                      loop
+                      className="w-full"
+                    >
+                      <MultiSelectorTrigger>
+                        <MultiSelectorInput placeholder="Select Subject" />
+                      </MultiSelectorTrigger>
+                      <MultiSelectorContent>
+                        <MultiSelectorList>
+                          {subjects.map((item) => (
+                            <MultiSelectorItem value={item.id} key={item.id}>
+                              {item.name}
+                            </MultiSelectorItem>
+                          ))}
+                        </MultiSelectorList>
+                      </MultiSelectorContent>
+                    </MultiSelector>
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter className="mt-5">
+              <Button type="submit">Create teacher</Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
