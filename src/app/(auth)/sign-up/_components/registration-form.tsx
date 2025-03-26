@@ -56,7 +56,7 @@ export default function RegistrationForm() {
             toast.error(res.message || "Registration failed.");
           } else {
             toast.success("Registration successful!");
-            router.push(res.redirect as string); // 👈 Use router to navigate
+            router.push("/"); // 👈 Use router to navigate
           }
         })
         .catch((err) => {

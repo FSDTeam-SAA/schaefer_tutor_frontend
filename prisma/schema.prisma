@@ -29,11 +29,11 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
-enum Role {
+ enum Role {
   student
   teacher
   admin
-}
+} 
 
 model Account {
   id                String  @id @default(auto()) @map("_id") @db.ObjectId

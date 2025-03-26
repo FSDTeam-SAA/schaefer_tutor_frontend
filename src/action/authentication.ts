@@ -52,7 +52,7 @@ export async function RegistrationAction(
     },
   });
 
-  return { success: true, redirect: "/" }; // 👈 Explicit response
+  return { success: true, message: "Registration successfully!" }; // 👈 Explicit response
 }
 
 export async function LoginAction(data: LoginValues) {
