@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -8,7 +9,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { prisma } from "@/lib/prisma";
+import { User } from "@prisma/client";
 import { AddTeacherDialog } from "./add-teacher-dialog";
+import TeacherAction from "./teacher-action";
 export interface Teacher {
   id: string;
   name: string;
@@ -17,32 +20,14 @@ export interface Teacher {
   students: number;
 }
 
-export const teachers: Teacher[] = [
-  {
-    id: "1",
-    name: "Simon Schäfer",
-    email: "simon@schaefertutoring.de",
-    subjects: "Mathematics, Physics",
-    students: 8,
-  },
-  {
-    id: "2",
-    name: "Anna Fischer",
-    email: "anna@schaefertutoring.de",
-    subjects: "German English",
-    students: 6,
-  },
-  {
-    id: "3",
-    name: "Michael Weber",
-    email: "michael@schaefertutoring.de",
-    subjects: "Chemistry, Biology",
-    students: 5,
-  },
-];
-
 export default async function TeacherOverview() {
   const subjects = await prisma.subject.findMany();
+  const teachers = await prisma.user.findMany({
+    where: {
+      role: "teacher",
+    },
+  });
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -58,23 +43,31 @@ export default async function TeacherOverview() {
             <TableRow>
               <TableHead>name</TableHead>
               <TableHead>e-mail</TableHead>
-              <TableHead>fan</TableHead>
+              <TableHead>Fan</TableHead>
               <TableHead>Number of students</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {teachers.map((teacher: Teacher) => (
+            {teachers.map((teacher: User) => (
               <TableRow key={teacher.id}>
                 <TableCell>{teacher.name}</TableCell>
                 <TableCell>{teacher.email}</TableCell>
-                <TableCell>{teacher.subjects}</TableCell>
-                <TableCell>{teacher.students}</TableCell>
                 <TableCell>
-                  <div className="flex gap-2">
-                    {/* <EditTeacherDialog teacher={teacher} />
-                    <DeleteTeacherDialog teacherName={teacher.name} /> */}
+                  <div className="space-x-2">
+                    {teacher.subjects.map((s) => (
+                      <Badge
+                        className="text-[10px] rounded-[50px] px-2"
+                        key={s}
+                      >
+                        {s}
+                      </Badge>
+                    ))}
                   </div>
+                </TableCell>
+                <TableCell>0</TableCell>
+                <TableCell>
+                  <TeacherAction subjects={subjects} data={teacher} />
                 </TableCell>
               </TableRow>
             ))}

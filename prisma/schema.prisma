@@ -23,8 +23,7 @@ model User {
   Authenticator Authenticator[]
 
   // Add a new field for teachers to have subjects
-  subjects   Subject[] @relation("TeacherSubjects", fields: [subjectIds], references: [id])
-  subjectIds String[]  @db.ObjectId
+  subjects String[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -97,10 +96,6 @@ model Authenticator {
 model Subject {
   id   String @id @default(auto()) @map("_id") @db.ObjectId
   name String
-
-  // Relation to User (teachers)
-  teachers   User[]   @relation("TeacherSubjects", fields: [teacherIds], references: [id])
-  teacherIds String[] @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
