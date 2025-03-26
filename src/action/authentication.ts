@@ -1,7 +1,12 @@
 "use server";
 import { signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { loginSchema, LoginValues, registrationSchema } from "@/schemas/schema";
+import {
+  loginSchema,
+  LoginValues,
+  registrationSchema,
+  teacherCreateSchema,
+} from "@/schemas/schema";
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
@@ -115,4 +120,49 @@ export async function LoginAction(data: LoginValues) {
   // You can implement session handling or JWT generation here
 
   return redirect("/");
+}
+
+export async function TeacherRegistrationAction(
+  data: z.infer<typeof teacherCreateSchema>
+) {
+  const validationResult = teacherCreateSchema.safeParse(data);
+
+  if (!validationResult.success) {
+    return { errors: validationResult.error.format() };
+  }
+
+  const validatedData = validationResult.data;
+
+  // Normalize email
+  const email = validatedData.email.toLowerCase();
+
+  // Check if teacher already exists
+  const exist = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (exist) {
+    return { success: false, message: "User already exists." };
+  }
+
+  // Hash the password
+  const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+
+  try {
+    // Create the teacher in the database
+    await prisma.user.create({
+      data: {
+        name: validatedData.name,
+        email,
+        password: hashedPassword,
+        role: "teacher",
+        subjectIds: validatedData.subjectids,
+      },
+    });
+
+    return { success: true, message: "Teacher Added successful!" };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    return { success: false, message: err.message };
+  }
 }

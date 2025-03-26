@@ -1,6 +1,10 @@
-import { Badge } from "@/components/ui/badge";
+import SubjectPill from "@/app/dashboard/admin/_components/subjects/subject-pill";
+import { prisma } from "@/lib/prisma";
 
-const Subjects = () => {
+const Subjects = async () => {
+  const subjects = await prisma.subject.findMany();
+
+  if (subjects.length == 0) return;
   return (
     <section id="subjects" className="w-full py-12 md:py-24 lg:py-32">
       <div className="container px-4 md:px-6 mx-auto">
@@ -12,23 +16,8 @@ const Subjects = () => {
           </div>
         </div>
         <div className="mx-auto grid max-w-3xl grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 pt-8">
-          {[
-            "mathematics",
-            "German",
-            "English",
-            "physics",
-            "Chemistry",
-            "biology",
-            "Story",
-            "Business",
-          ].map((subject) => (
-            <Badge
-              key={subject}
-              variant="outline"
-              className="py-3 text-center justify-center text-base rounded-[50px]"
-            >
-              {subject}
-            </Badge>
+          {subjects.map((item) => (
+            <SubjectPill data={item} key={item.id} />
           ))}
         </div>
       </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -12,10 +11,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { subjectSchema, SubjectSchemaType } from "@/schemas/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useTransition } from "react";
+import { ReactNode, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 
-import { CreateSubjectAction } from "@/action/subject";
+import { CreateSubjectAction, EditSubjectAction } from "@/action/subject";
 import {
   Form,
   FormControl,
@@ -24,42 +23,72 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { Subject } from "@prisma/client";
 import { toast } from "sonner";
 
-export function AddSubjectDialog() {
+interface Props {
+  initialData?: Subject;
+  trigger: ReactNode;
+}
+
+export function AddSubjectDialog({ initialData, trigger }: Props) {
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const form = useForm<SubjectSchemaType>({
     resolver: zodResolver(subjectSchema),
+    defaultValues: {
+      name: initialData?.name ?? "",
+    },
   });
 
   function onSubmit(values: SubjectSchemaType) {
-    startTransition(() => {
-      CreateSubjectAction(values)
-        .then((res) => {
-          if (!res.success) {
-            toast.error(res.message);
-            return;
-          } else {
-            form.reset();
-            toast.success(res.message);
+    if (initialData) {
+      startTransition(() => {
+        EditSubjectAction(initialData?.id as string, values)
+          .then((res) => {
+            if (!res.success) {
+              toast.error(res.message);
+              return;
+            } else {
+              form.reset();
+              toast.success(res.message);
+            }
+          })
+          .catch((err) => {
+            toast.error(err.message);
+          })
+          .finally(() => {
             setOpen(false);
-          }
-        })
-        .catch((err) => {
-          toast.error(err.message);
-        });
-    });
+          });
+      });
+    } else {
+      startTransition(() => {
+        CreateSubjectAction(values)
+          .then((res) => {
+            if (!res.success) {
+              toast.error(res.message);
+              return;
+            } else {
+              form.reset();
+              toast.success(res.message);
+              setOpen(false);
+            }
+          })
+          .catch((err) => {
+            toast.error(err.message);
+          });
+      });
+    }
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>Add new Subject</Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add a new Subject</DialogTitle>
+          <DialogTitle>
+            {initialData ? "Edit Subject" : "Add a new Subject"}
+          </DialogTitle>
           <DialogDescription>
             Enter the subject name and click save.
           </DialogDescription>
@@ -79,7 +108,10 @@ export function AddSubjectDialog() {
               )}
             />
             <div className="flex justify-end">
-              <SubmitButton text="Create Subject" pending={isPending} />
+              <SubmitButton
+                text={initialData ? "Save Now" : "Create Subject"}
+                pending={isPending}
+              />
             </div>
           </form>
         </Form>
