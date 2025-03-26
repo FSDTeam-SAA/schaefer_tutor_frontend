@@ -19,7 +19,7 @@ export async function RegistrationAction(
   const validatedData = validationResult.data;
 
   // Check if the user already exists
-  const exist = await prisma.user.findUnique({
+  const exist = await prisma.user.findFirst({
     where: {
       email: validatedData.email,
     },
@@ -58,7 +58,7 @@ export async function LoginAction(data: LoginValues) {
   const validatedData = validationResult.data;
 
   // Check if the user exists
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findFirst({
     where: {
       email: validatedData.email,
     },
