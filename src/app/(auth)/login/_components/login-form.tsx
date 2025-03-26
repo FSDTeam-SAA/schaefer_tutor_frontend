@@ -104,7 +104,7 @@ export default function LoginForm() {
 
           <div className="flex justify-end">
             <Link
-              href="/onboarding/forget-password"
+              href="/"
               className="font-inter text-[14px] font-medium leading-[16.94px] text-[#1D3557] hover:underline"
             >
               Forgot Password?
