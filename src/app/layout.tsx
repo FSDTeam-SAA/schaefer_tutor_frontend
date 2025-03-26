@@ -1,4 +1,3 @@
-import { auth } from "@/auth";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Toaster } from "sonner";
@@ -26,9 +25,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
-
-  console.log(session);
   return (
     <html lang="en">
       <body

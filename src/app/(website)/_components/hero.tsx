@@ -1,6 +1,16 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 const Hero = () => {
+  const [load, setLoad] = useState(false);
+
+  useEffect(() => {
+    setLoad(true);
+  }, []);
+
+  if (!load) return null;
   return (
     <div className="py-12 md:py-20 bg-gradient-to-b from-blue-50 to-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

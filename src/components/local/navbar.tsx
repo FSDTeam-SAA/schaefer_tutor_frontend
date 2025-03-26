@@ -20,9 +20,7 @@ const Navbar = async () => {
               <form
                 action={async () => {
                   "use server";
-                  await signOut({
-                    redirectTo: "/",
-                  });
+                  await signOut();
                 }}
               >
                 <Button type="submit">Log out</Button>
