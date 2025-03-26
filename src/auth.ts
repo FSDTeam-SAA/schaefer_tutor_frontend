@@ -11,7 +11,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!credentials) return null;
 
         // Check if the user exists
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.findFirst({
           where: {
             email: credentials.email as string,
           },
