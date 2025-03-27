@@ -33,7 +33,7 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { cn } from "@/lib/utils";
 import { LessonCreateSchema, lessonCreateSchema } from "@/schemas/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User } from "@prisma/client";
+import { Subject, User } from "@prisma/client";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { ReactNode, useState, useTransition } from "react";
@@ -43,6 +43,7 @@ import { toast } from "sonner";
 interface BookLessonModalProps {
   trigger: ReactNode;
   students: User[];
+  subjects: Subject[];
 }
 
 const timeSlots = [
@@ -66,6 +67,7 @@ const timeSlots = [
 export default function BookLessonModal({
   trigger,
   students,
+  subjects,
 }: BookLessonModalProps) {
   const [pending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
@@ -204,6 +206,34 @@ export default function BookLessonModal({
                   <p className="text-sm text-muted-foreground mt-1">
                     Stunden dauern immer 60 Minuten
                   </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="subjectId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Schüler</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Bitte wählen" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {subjects.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

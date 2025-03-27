@@ -59,6 +59,7 @@ export async function createLessonAction(input: LessonCreateSchema) {
         date,
         time,
         status: "planned", // Default status for a new lesson
+        subjectId: parsedInput.data.subjectId,
       },
     });
 
