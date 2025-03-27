@@ -27,3 +27,17 @@ export const teacherCreateSchema = z.object({
 });
 
 export type TeacherCreateSchemaType = z.infer<typeof teacherCreateSchema>;
+
+export const lessonCreateSchema = z.object({
+  studentId: z.string({
+    required_error: "Bitte wählen Sie einen Schüler aus",
+  }),
+  date: z.date({
+    required_error: "Bitte wählen Sie ein Datum aus",
+  }),
+  time: z.string({
+    required_error: "Bitte wählen Sie eine Startzeit aus",
+  }),
+});
+
+export type LessonCreateSchema = z.infer<typeof lessonCreateSchema>;

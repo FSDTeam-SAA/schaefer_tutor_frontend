@@ -173,12 +173,12 @@ export default function RegistrationForm() {
       </Form>
 
       <p className="mt-[32px] text-center text-[14px] font-normal leading-[16.94px] text-[#9CA3AF]">
-        Don&apos;t have an account?{" "}
+        Already have an account?{" "}
         <Link
-          href={`/onboarding`}
+          href={`/login`}
           className="font-medium text-[#1D3557] hover:underline"
         >
-          Sign Up
+          Login
         </Link>
       </p>
     </div>
