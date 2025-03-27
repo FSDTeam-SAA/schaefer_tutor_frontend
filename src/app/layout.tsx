@@ -1,3 +1,4 @@
+import NProgress from "@/components/providers/NProgress";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Toaster } from "sonner";
@@ -32,6 +33,7 @@ export default async function RootLayout({
       >
         {children}
         <Toaster richColors closeButton />
+        <NProgress />
       </body>
     </html>
   );

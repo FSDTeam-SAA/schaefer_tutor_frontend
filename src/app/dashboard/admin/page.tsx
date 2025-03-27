@@ -1,12 +1,10 @@
-import DashboardNav from "@/components/local/dashboard-nav";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SubjectContainer from "./_components/subjects/subject-container";
 import TeacherOverview from "./_components/teacher/teacher-overview";
 export default function Dashboard() {
   return (
     <div>
-      <DashboardNav />
-      <main className="max-w-6xl px-4 sm:px-6 lg:px-8 pt-6 mx-auto">
+      <main className="max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 mx-auto">
         <Tabs defaultValue="teacher">
           <TabsList className="mb-4">
             <TabsTrigger value="teacher">Teacher</TabsTrigger>

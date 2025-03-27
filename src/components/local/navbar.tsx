@@ -1,9 +1,11 @@
 import { auth, signOut } from "@/auth";
 import { Button } from "@/components/ui/button";
+import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 
 const Navbar = async () => {
   const session = await auth();
+  const role = session?.user.role as "student" | "teacher" | "admin";
 
   return (
     <nav className="bg-white shadow-md">
@@ -15,7 +17,23 @@ const Navbar = async () => {
             </span>
           </div>
           <div className="flex items-center space-x-4">
-            <Button effect="gooeyLeft">Free trial lesson</Button>
+            {!session && (
+              <Button effect="gooeyLeft" asChild>
+                <Link href="/sign-up">Free trial lesson</Link>
+              </Button>
+            )}
+
+            {session && (
+              <Button
+                effect="expandIcon"
+                icon={ArrowRightIcon}
+                iconPlacement="right"
+                variant="outline"
+                asChild
+              >
+                <Link href={`/dashboard/${role}`}>Dashboard</Link>
+              </Button>
+            )}
             {session ? (
               <form
                 action={async () => {

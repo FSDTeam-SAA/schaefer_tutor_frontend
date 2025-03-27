@@ -1,17 +1,18 @@
 import { auth, signOut } from "@/auth";
+import Link from "next/link";
 import { Button } from "../ui/button";
 
 const DashboardNav = async () => {
   const session = await auth();
   return (
     <nav className="bg-white shadow-md">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex items-center">
+          <Link href="/" className="flex items-center  cursor-pointer">
             <span className="text-blue-600 font-bold text-xl">
               Schäfer Tutoring
             </span>
-          </div>
+          </Link>
           <div className="flex items-center space-x-4">
             {session && (
               <form
