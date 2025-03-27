@@ -17,11 +17,13 @@ const Navbar = async () => {
             </span>
           </div>
           <div className="flex items-center space-x-4">
-            {!session ? (
+            {!session && (
               <Button effect="gooeyLeft" asChild>
                 <Link href="/sign-up">Free trial lesson</Link>
               </Button>
-            ) : (
+            )}
+
+            {session && (
               <Button
                 effect="expandIcon"
                 icon={ArrowRightIcon}
