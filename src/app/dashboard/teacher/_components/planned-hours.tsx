@@ -27,6 +27,7 @@ const PlannedHours = async () => {
   const data = await prisma.lesson.findMany({
     where: {
       teacherId: session.user.id,
+      status: "planned",
     },
     include: {
       subject: {

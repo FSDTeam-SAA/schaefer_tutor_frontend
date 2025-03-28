@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/require-user";
 import { LessonCreateSchema, lessonCreateSchema } from "@/schemas/schema";
+import { LessonStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache"; // adjust if you're using a different revalidation strategy
 
 export async function createLessonAction(input: LessonCreateSchema) {
@@ -162,6 +163,75 @@ export async function editLessonAction(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     // Step 5: Handle errors
+    return {
+      success: false,
+      message: error.message || "An unexpected error occurred",
+    };
+  }
+}
+
+export async function updateLessonStatusAction(
+  lessonId: string,
+  status: LessonStatus
+) {
+  // Step 1: Validate the input status
+  if (!Object.values(LessonStatus).includes(status)) {
+    return {
+      success: false,
+      message: "Invalid lesson status provided",
+    };
+  }
+
+  const session = await requireUser(); // Ensure that a user is logged in
+
+  if (!session?.user) {
+    return {
+      success: false,
+      message: "Unauthorized: User session is required",
+    };
+  }
+
+  try {
+    // Step 2: Check if the lesson exists and belongs to the logged-in teacher
+    const existingLesson = await prisma.lesson.findUnique({
+      where: { id: lessonId },
+    });
+
+    if (!existingLesson) {
+      return {
+        success: false,
+        message: "Lesson not found",
+      };
+    }
+
+    if (existingLesson.teacherId !== session.user.id) {
+      return {
+        success: false,
+        message:
+          "Unauthorized: You do not have permission to update this lesson's status",
+      };
+    }
+
+    // Step 3: Update the lesson's status
+    const updatedLesson = await prisma.lesson.update({
+      where: { id: lessonId },
+      data: {
+        status,
+      },
+    });
+
+    // Optionally, revalidate the relevant path to reflect the changes
+    revalidatePath("/dashboard/teacher"); // Adjust the path as needed
+
+    return {
+      success: true,
+      message: "Lesson status updated successfully",
+      lesson: updatedLesson,
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    // Step 4: Handle errors
     return {
       success: false,
       message: error.message || "An unexpected error occurred",
