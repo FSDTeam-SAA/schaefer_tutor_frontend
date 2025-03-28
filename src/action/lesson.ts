@@ -204,14 +204,6 @@ export async function updateLessonStatusAction(
       };
     }
 
-    if (existingLesson.teacherId !== session.user.id) {
-      return {
-        success: false,
-        message:
-          "Unauthorized: You do not have permission to update this lesson's status",
-      };
-    }
-
     // Step 3: Update the lesson's status
     const updatedLesson = await prisma.lesson.update({
       where: { id: lessonId },
