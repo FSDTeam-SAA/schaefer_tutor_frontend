@@ -8,26 +8,53 @@ generator client {
 }
 
 model User {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  name          String?
-  email         String?         @unique
-  password      String
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String?
+  email String? @unique
+  password String
   emailVerified DateTime?
-  image         String?
-  phone         String?
-  profileImage  String?
-  role          Role            @default(student)
-  accounts      Account[]
-  sessions      Session[]
-  // Optional for WebAuthn support
+  image String?
+  phone String?
+  profileImage String?
+  role Role @default(student)
+  accounts Account[]
+  sessions Session[]
   Authenticator Authenticator[]
 
-  // Add a new field for teachers to have subjects
+  // For teachers who have subjects
   subjects String[]
+
+  // Relations for lessons
+  teacherLessons Lesson[] @relation(name: "TeacherLessons")
+  studentLessons Lesson[] @relation(name: "StudentLessons")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Lesson {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  teacherId String @db.ObjectId
+  studentId String @db.ObjectId
+  subjectId String @db.ObjectId
+
+  date DateTime
+  time String
+  status LessonStatus @default(planned)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships with explicit names
+  teacher User @relation(name: "TeacherLessons", fields: [teacherId], references: [id], onDelete: Cascade)
+  student User @relation(name: "StudentLessons", fields: [studentId], references: [id], onDelete: Cascade)
+  subject Subject @relation(name: "SubjectLessons", fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@index([teacherId])
+  @@index([studentId])
+  @@index([subjectId])
+}
+
 
  enum Role {
   student
@@ -97,6 +124,33 @@ model Subject {
   id   String @id @default(auto()) @map("_id") @db.ObjectId
   name String
 
+
+  // Relation with Lesson
+  lessons Lesson[] @relation(name: "SubjectLessons")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+
+
+
+
+
+enum LessonStatus {
+  now
+  canceled
+  accepted
+  planned
+}
+
+model Assignment {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  attachment    String?      // URL or file path for the attachment
+  description   String?
+  studentId      String @db.ObjectId
+  teacherId String @db.ObjectId
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
