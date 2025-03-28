@@ -1,10 +1,3 @@
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -15,18 +8,26 @@ import {
 } from "@/components/ui/table";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/require-user";
-import { MoreHorizontal } from "lucide-react";
 import moment from "moment";
 import { redirect } from "next/navigation";
+import PlannedHoursAction from "./planned-hours-action";
 
 const PlannedHours = async () => {
   const session = await requireUser();
 
   if (!session) redirect("/login");
 
+  const subjects = await prisma.subject.findMany();
+  const student = await prisma.user.findMany({
+    where: {
+      role: "student",
+    },
+  });
+
   const data = await prisma.lesson.findMany({
     where: {
       teacherId: session.user.id,
+      status: "planned",
     },
     include: {
       subject: {
@@ -66,31 +67,11 @@ const PlannedHours = async () => {
               <TableCell>{lesson.time}</TableCell>
               <TableCell>{lesson.subject.name}</TableCell>
               <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <span className="sr-only">Open menu</span>
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <span className="bg-blue-500 text-white py-1 px-3 rounded-md w-full text-center">
-                        Move
-                      </span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <span className="bg-red-500 text-white py-1 px-3 rounded-md w-full text-center">
-                        Cancel
-                      </span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <span className="bg-green-500 text-white py-1 px-3 rounded-md w-full text-center">
-                        At the moment
-                      </span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <PlannedHoursAction
+                  data={lesson}
+                  subjects={subjects}
+                  students={student}
+                />
               </TableCell>
             </TableRow>
           ))}

@@ -1,5 +1,5 @@
 "use client";
-import { createLessonAction } from "@/action/lesson";
+import { createLessonAction, editLessonAction } from "@/action/lesson";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -33,7 +33,7 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { cn } from "@/lib/utils";
 import { LessonCreateSchema, lessonCreateSchema } from "@/schemas/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Subject, User } from "@prisma/client";
+import { Lesson, Subject, User } from "@prisma/client";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { ReactNode, useState, useTransition } from "react";
@@ -44,6 +44,7 @@ interface BookLessonModalProps {
   trigger: ReactNode;
   students: User[];
   subjects: Subject[];
+  initialData?: Lesson;
 }
 
 const timeSlots = [
@@ -68,6 +69,7 @@ export default function BookLessonModal({
   trigger,
   students,
   subjects,
+  initialData,
 }: BookLessonModalProps) {
   const [pending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
@@ -75,24 +77,41 @@ export default function BookLessonModal({
   const form = useForm<LessonCreateSchema>({
     resolver: zodResolver(lessonCreateSchema),
     defaultValues: {
-      studentId: "",
-      time: "11:00 AM",
+      studentId: initialData?.studentId ?? "",
+      time: initialData?.time ?? "",
+      date: initialData?.date ?? new Date(),
+      subjectId: initialData?.subjectId ?? "",
     },
   });
 
   function onSubmit(data: LessonCreateSchema) {
-    startTransition(() => {
-      createLessonAction(data).then((res) => {
-        if (!res.success) {
-          toast.error(res.message);
-          return;
-        } else {
-          toast.success(res.message);
-          form.reset();
-          setOpen(false);
-        }
+    if (initialData) {
+      startTransition(() => {
+        editLessonAction(data, initialData?.id).then((res) => {
+          if (!res.success) {
+            toast.error(res.message);
+            return;
+          } else {
+            toast.success(res.message);
+            form.reset();
+            setOpen(false);
+          }
+        });
       });
-    });
+    } else {
+      startTransition(() => {
+        createLessonAction(data).then((res) => {
+          if (!res.success) {
+            toast.error(res.message);
+            return;
+          } else {
+            toast.success(res.message);
+            form.reset();
+            setOpen(false);
+          }
+        });
+      });
+    }
   }
 
   return (
@@ -102,7 +121,7 @@ export default function BookLessonModal({
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl font-bold">
-              Neue Stunde buchen
+              {initialData ? "Edit lesson" : "Book a new lesson"}
             </DialogTitle>
           </div>
         </DialogHeader>
@@ -117,7 +136,7 @@ export default function BookLessonModal({
               name="studentId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Schüler</FormLabel>
+                  <FormLabel>Student</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -145,7 +164,7 @@ export default function BookLessonModal({
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Datum</FormLabel>
+                  <FormLabel>Date</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -185,7 +204,7 @@ export default function BookLessonModal({
               name="time"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Startzeit</FormLabel>
+                  <FormLabel>Time</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -216,7 +235,7 @@ export default function BookLessonModal({
               name="subjectId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Schüler</FormLabel>
+                  <FormLabel>Subject</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -240,7 +259,10 @@ export default function BookLessonModal({
             />
 
             <div className="flex justify-end pt-2">
-              <SubmitButton text="Create lesson" pending={pending} />
+              <SubmitButton
+                text={initialData ? "Save Now" : "Create lesson"}
+                pending={pending}
+              />
             </div>
           </form>
         </Form>
