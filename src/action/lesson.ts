@@ -81,3 +81,90 @@ export async function createLessonAction(input: LessonCreateSchema) {
     };
   }
 }
+
+export async function editLessonAction(
+  input: LessonCreateSchema,
+  lessonId: string
+) {
+  // Step 1: Validate input with Zod schema
+  const parsedInput = lessonCreateSchema.safeParse(input);
+
+  if (!parsedInput.success) {
+    return {
+      success: false,
+      message: parsedInput.error.message,
+    };
+  }
+
+  const { studentId, date, time, subjectId } = parsedInput.data;
+
+  const session = await requireUser(); // Ensure that a user is logged in
+
+  if (!session?.user) {
+    return {
+      success: false,
+      message: "Unauthorized: User session is required",
+    };
+  }
+
+  try {
+    // Step 2: Check if the lesson exists and belongs to the logged-in teacher
+    const existingLesson = await prisma.lesson.findUnique({
+      where: { id: lessonId },
+    });
+
+    if (!existingLesson) {
+      return {
+        success: false,
+        message: "Lesson not found",
+      };
+    }
+
+    if (existingLesson.teacherId !== session.user.id) {
+      return {
+        success: false,
+        message: "Unauthorized: You do not have permission to edit this lesson",
+      };
+    }
+
+    // Step 3: Check if the student exists
+    const studentExists = await prisma.user.findUnique({
+      where: { id: studentId },
+    });
+
+    if (!studentExists) {
+      return {
+        success: false,
+        message: "Student not found",
+      };
+    }
+
+    // Step 4: Update the lesson
+    const updatedLesson = await prisma.lesson.update({
+      where: { id: lessonId },
+      data: {
+        studentId,
+        date,
+        time,
+        subjectId,
+      },
+    });
+
+    // Optionally, revalidate the relevant path to reflect the changes
+    revalidatePath("/dashboard/teacher"); // Adjust the path as needed
+
+    return {
+      success: true,
+      message: "Lesson updated successfully",
+      lesson: updatedLesson,
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    // Step 5: Handle errors
+    return {
+      success: false,
+      message: error.message || "An unexpected error occurred",
+    };
+  }
+}
