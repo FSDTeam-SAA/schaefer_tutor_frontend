@@ -22,15 +22,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  MultiSelector,
-  MultiSelectorContent,
-  MultiSelectorInput,
-  MultiSelectorItem,
-  MultiSelectorList,
-  MultiSelectorTrigger,
-} from "@/components/ui/multi-select";
 import { PasswordInput } from "@/components/ui/password-input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { teacherCreateSchema, TeacherCreateSchemaType } from "@/schemas/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -51,7 +51,7 @@ export function AddTeacherDialog({ subjects, trigger, initialData }: Props) {
   const form = useForm<TeacherCreateSchemaType>({
     resolver: zodResolver(teacherCreateSchema),
     defaultValues: {
-      subjectids: initialData?.subjects ?? [],
+      subjectids: initialData?.subjects ?? "",
       name: initialData?.name ?? "",
       email: initialData?.email ?? "",
     },
@@ -168,25 +168,24 @@ export function AddTeacherDialog({ subjects, trigger, initialData }: Props) {
                 <FormItem>
                   <FormLabel>Subject</FormLabel>
                   <FormControl>
-                    <MultiSelector
-                      values={field.value}
-                      onValuesChange={field.onChange}
-                      loop
-                      className="w-full"
+                    <Select
+                      defaultValue={field.value}
+                      value={field.value}
+                      onValueChange={(val) => field.onChange(val)}
                     >
-                      <MultiSelectorTrigger>
-                        <MultiSelectorInput placeholder="Select Subject" />
-                      </MultiSelectorTrigger>
-                      <MultiSelectorContent>
-                        <MultiSelectorList>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select a subject" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
                           {subjects.map((item) => (
-                            <MultiSelectorItem value={item.name} key={item.id}>
+                            <SelectItem value={item.name} key={item.id}>
                               {item.name}
-                            </MultiSelectorItem>
+                            </SelectItem>
                           ))}
-                        </MultiSelectorList>
-                      </MultiSelectorContent>
-                    </MultiSelector>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </FormControl>
 
                   <FormMessage />

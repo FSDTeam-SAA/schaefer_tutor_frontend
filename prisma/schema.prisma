@@ -22,7 +22,7 @@ model User {
   Authenticator Authenticator[]
 
   // For teachers who have subjects
-  subjects String[]
+  subjects String?
 
   // Relations for lessons
   teacherLessons Lesson[] @relation(name: "TeacherLessons")

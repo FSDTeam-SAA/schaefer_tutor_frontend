@@ -55,14 +55,9 @@ export default async function TeacherOverview() {
                 <TableCell>{teacher.email}</TableCell>
                 <TableCell>
                   <div className="space-x-2">
-                    {teacher.subjects.map((s) => (
-                      <Badge
-                        className="text-[10px] rounded-[50px] px-2"
-                        key={s}
-                      >
-                        {s}
-                      </Badge>
-                    ))}
+                    <Badge className="text-[10px] rounded-[50px] px-2">
+                      {teacher.subjects}
+                    </Badge>
                   </div>
                 </TableCell>
                 <TableCell>0</TableCell>
