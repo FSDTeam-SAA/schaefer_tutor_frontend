@@ -7,19 +7,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Lesson, Subject, User } from "@prisma/client";
+import { Lesson, User } from "@prisma/client";
 import { MoreHorizontal } from "lucide-react";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import BookLessonModal from "./add-lesson-modal";
 
 interface Props {
-  subjects: Subject[];
   students: User[];
   data: Lesson;
 }
 
-const PlannedHoursAction = ({ data, subjects, students }: Props) => {
+const PlannedHoursAction = ({ data, students }: Props) => {
   const [cancelPending, startTransition] = useTransition();
 
   const onCanel = () => {
@@ -46,7 +45,6 @@ const PlannedHoursAction = ({ data, subjects, students }: Props) => {
       <DropdownMenuContent align="end" className="space-y-2">
         <DropdownMenuItem asChild>
           <BookLessonModal
-            subjects={subjects ?? []}
             students={students ?? []}
             initialData={data}
             trigger={

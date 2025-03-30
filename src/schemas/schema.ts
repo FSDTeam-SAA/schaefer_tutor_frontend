@@ -38,9 +38,6 @@ export const lessonCreateSchema = z.object({
   time: z.string({
     required_error: "Bitte wählen Sie eine Startzeit aus",
   }),
-  subjectId: z.string({
-    required_error: "Bitte wählen Sie einen Schüler aus",
-  }),
 });
 
 export type LessonCreateSchema = z.infer<typeof lessonCreateSchema>;

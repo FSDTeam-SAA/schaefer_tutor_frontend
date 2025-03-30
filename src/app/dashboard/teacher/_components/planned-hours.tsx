@@ -17,7 +17,6 @@ const PlannedHours = async () => {
 
   if (!session) redirect("/login");
 
-  const subjects = await prisma.subject.findMany();
   const student = await prisma.user.findMany({
     where: {
       role: "student",
@@ -67,11 +66,7 @@ const PlannedHours = async () => {
               <TableCell>{lesson.time}</TableCell>
               <TableCell>{lesson.subject.name}</TableCell>
               <TableCell>
-                <PlannedHoursAction
-                  data={lesson}
-                  subjects={subjects}
-                  students={student}
-                />
+                <PlannedHoursAction data={lesson} students={student} />
               </TableCell>
             </TableRow>
           ))}

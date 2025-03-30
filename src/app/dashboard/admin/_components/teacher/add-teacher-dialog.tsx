@@ -173,7 +173,7 @@ export function AddTeacherDialog({ subjects, trigger, initialData }: Props) {
                       value={field.value}
                       onValueChange={(val) => field.onChange(val)}
                     >
-                      <SelectTrigger className="w-[180px]">
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select a subject" />
                       </SelectTrigger>
                       <SelectContent>

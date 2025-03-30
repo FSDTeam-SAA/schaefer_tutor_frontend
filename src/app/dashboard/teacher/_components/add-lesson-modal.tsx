@@ -33,7 +33,7 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { cn } from "@/lib/utils";
 import { LessonCreateSchema, lessonCreateSchema } from "@/schemas/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Lesson, Subject, User } from "@prisma/client";
+import { Lesson, User } from "@prisma/client";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { ReactNode, useState, useTransition } from "react";
@@ -43,7 +43,6 @@ import { toast } from "sonner";
 interface BookLessonModalProps {
   trigger: ReactNode;
   students: User[];
-  subjects: Subject[];
   initialData?: Lesson;
 }
 
@@ -68,7 +67,6 @@ const timeSlots = [
 export default function BookLessonModal({
   trigger,
   students,
-  subjects,
   initialData,
 }: BookLessonModalProps) {
   const [pending, startTransition] = useTransition();
@@ -80,7 +78,6 @@ export default function BookLessonModal({
       studentId: initialData?.studentId ?? "",
       time: initialData?.time ?? "",
       date: initialData?.date ?? new Date(),
-      subjectId: initialData?.subjectId ?? "",
     },
   });
 
@@ -225,34 +222,6 @@ export default function BookLessonModal({
                   <p className="text-sm text-muted-foreground mt-1">
                     Stunden dauern immer 60 Minuten
                   </p>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="subjectId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Subject</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Bitte wählen" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {subjects.map((item) => (
-                        <SelectItem key={item.id} value={item.id}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

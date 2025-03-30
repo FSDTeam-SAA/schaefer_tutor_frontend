@@ -29,6 +29,7 @@ export async function createLessonAction(input: LessonCreateSchema) {
   }
 
   try {
+    const subjects = await prisma.subject.findMany();
     // Step 2: Check if the teacher and student exist
     const teacherExists = await prisma.user.findUnique({
       where: { id: session.user.id },
@@ -52,6 +53,17 @@ export async function createLessonAction(input: LessonCreateSchema) {
       };
     }
 
+    const subject = subjects.find(
+      (item) => item.name === teacherExists.subjects
+    );
+
+    if (!subject) {
+      return {
+        success: false,
+        message: "Subject not found",
+      };
+    }
+
     // Step 3: Create the lesson
     const newLesson = await prisma.lesson.create({
       data: {
@@ -60,7 +72,7 @@ export async function createLessonAction(input: LessonCreateSchema) {
         date,
         time,
         status: "planned", // Default status for a new lesson
-        subjectId: parsedInput.data.subjectId,
+        subjectId: subject.id,
       },
     });
 
@@ -97,7 +109,7 @@ export async function editLessonAction(
     };
   }
 
-  const { studentId, date, time, subjectId } = parsedInput.data;
+  const { studentId, date, time } = parsedInput.data;
 
   const session = await requireUser(); // Ensure that a user is logged in
 
@@ -147,7 +159,6 @@ export async function editLessonAction(
         studentId,
         date,
         time,
-        subjectId,
       },
     });
 

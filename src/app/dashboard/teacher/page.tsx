@@ -45,14 +45,12 @@ export default async function Page() {
     },
   });
 
-  const subjects = await prisma.subject.findMany();
   return (
     <div className="max-w-7xl mx-auto mt-10 px-4 sm:px-6 lg:px-8">
       <Card className="border shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between pb-2 pt-6 px-6">
           <CardTitle className="text-xl font-bold">My Dashboard</CardTitle>
           <BookLessonModal
-            subjects={subjects}
             students={students}
             trigger={<Button effect="gooeyLeft">Book a new lesson</Button>}
           />
