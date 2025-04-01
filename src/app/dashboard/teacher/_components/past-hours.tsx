@@ -36,6 +36,7 @@ const PastTeacherHours = async () => {
           gte: startOfDay, // Greater than or equal to the start of today
           lt: endOfDay, // Less than the start of tomorrow
         },
+        status: "accepted",
       },
     },
     include: {

@@ -57,8 +57,8 @@ const PlannedHoursAction = ({ data, students }: Props) => {
 
         <DropdownMenuItem asChild>
           <Button
-            variant={cancelPending ? "outline" : "destructive"}
-            className="w-full cursor-pointer"
+            variant="default"
+            className="w-full cursor-pointer bg-red-500 hover:bg-red-500/80"
             size="sm"
             disabled={cancelPending}
             onClick={onCanel}
@@ -66,11 +66,11 @@ const PlannedHoursAction = ({ data, students }: Props) => {
             {cancelPending ? "Cancelling..." : "Cancel"}
           </Button>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        {/* <DropdownMenuItem>
           <span className="bg-green-500 text-white py-1 px-3 rounded-md w-full text-center">
             At the moment
           </span>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
       </DropdownMenuContent>
     </DropdownMenu>
   );
