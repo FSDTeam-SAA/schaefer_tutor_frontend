@@ -23,7 +23,7 @@ export const teacherCreateSchema = z.object({
   name: z.string().min(1),
   email: z.string(),
   password: z.string(),
-  subjectids: z.array(z.string()).nonempty("Please at least one item"),
+  subjectids: z.string().nonempty("Please at least one item"),
 });
 
 export type TeacherCreateSchemaType = z.infer<typeof teacherCreateSchema>;
@@ -37,9 +37,6 @@ export const lessonCreateSchema = z.object({
   }),
   time: z.string({
     required_error: "Bitte wählen Sie eine Startzeit aus",
-  }),
-  subjectId: z.string({
-    required_error: "Bitte wählen Sie einen Schüler aus",
   }),
 });
 

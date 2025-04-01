@@ -93,7 +93,7 @@ export async function LoginAction(data: LoginValues) {
 
   try {
     await signIn("credentials", {
-      redirectTo: "/",
+      redirectTo: `/dashboard/${user.role}`,
       email: validatedData.email,
       password: validatedData.password,
     });
@@ -120,7 +120,7 @@ export async function LoginAction(data: LoginValues) {
 
   // You can implement session handling or JWT generation here
 
-  return redirect("/");
+  return redirect(`/dashboard/${user.role}`);
 }
 
 export async function TeacherRegistrationAction(
