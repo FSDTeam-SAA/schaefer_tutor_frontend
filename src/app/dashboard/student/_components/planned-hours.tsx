@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -8,6 +9,7 @@ import {
 } from "@/components/ui/table";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/require-user";
+import { cn } from "@/lib/utils";
 import moment from "moment";
 import { redirect } from "next/navigation";
 
@@ -18,7 +20,9 @@ export default async function PlannedHours() {
   const data = await prisma.lesson.findMany({
     where: {
       studentId: session.user.id,
-      status: "accepted",
+      status: {
+        in: ["accepted", "planned"],
+      },
       date: {
         gte: new Date(),
       },
@@ -46,6 +50,7 @@ export default async function PlannedHours() {
             <TableHead>Start time</TableHead>
             <TableHead>Academic subject</TableHead>
             <TableHead>Teacher</TableHead>
+            <TableHead>Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -57,6 +62,18 @@ export default async function PlannedHours() {
               <TableCell>{session.time}</TableCell>
               <TableCell>{session.subject.name}</TableCell>
               <TableCell>{session.teacher.name}</TableCell>
+              <TableCell>
+                <Badge
+                  className={cn(
+                    "rounded-[50px]",
+                    session.status === "accepted"
+                      ? "bg-green-500 hover:bg-green-500/80"
+                      : "bg-yellow-500 hover:bg-yellow-500/80"
+                  )}
+                >
+                  {session.status === "accepted" ? "Zur Stunde" : "Pending"}
+                </Badge>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
