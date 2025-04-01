@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -8,6 +9,7 @@ import {
 } from "@/components/ui/table";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/require-user";
+import { cn } from "@/lib/utils";
 import moment from "moment";
 import { redirect } from "next/navigation";
 import PlannedHoursAction from "./planned-hours-action";
@@ -26,7 +28,9 @@ const PlannedHours = async () => {
   const data = await prisma.lesson.findMany({
     where: {
       teacherId: session.user.id,
-      status: "planned",
+      status: {
+        in: ["planned", "accepted"],
+      },
     },
     include: {
       subject: {
@@ -51,6 +55,7 @@ const PlannedHours = async () => {
             <TableHead>Date</TableHead>
             <TableHead>Start time</TableHead>
             <TableHead>Academic subject</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -65,6 +70,18 @@ const PlannedHours = async () => {
               </TableCell>
               <TableCell>{lesson.time}</TableCell>
               <TableCell>{lesson.subject.name}</TableCell>
+              <TableCell>
+                <Badge
+                  className={cn(
+                    "rounded-[50px]",
+                    lesson.status === "accepted"
+                      ? "bg-green-500 hover:bg-green-500/80"
+                      : "bg-yellow-500 hover:bg-yellow-500/80"
+                  )}
+                >
+                  {lesson.status === "accepted" ? "Zur Stunde" : "Pending"}
+                </Badge>
+              </TableCell>
               <TableCell>
                 <PlannedHoursAction data={lesson} students={student} />
               </TableCell>
