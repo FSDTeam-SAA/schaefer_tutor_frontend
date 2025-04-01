@@ -41,23 +41,27 @@ export default async function OpenConfirmationRequests() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Start time</TableHead>
-            <TableHead>Academic subject</TableHead>
-            <TableHead>Teacher</TableHead>
-            <TableHead>action</TableHead>
+            <TableHead className="flex justify-start">Date</TableHead>
+            <TableHead className="text-center">Start time</TableHead>
+            <TableHead className="text-center">Academic subject</TableHead>
+            <TableHead className="text-center">Teacher</TableHead>
+            <TableHead className="flex justify-end">action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.map((request) => (
             <TableRow key={request.id}>
-              <TableCell className="font-medium">
+              <TableCell className="font-medium flex justify-start">
                 <p>{moment(request.date).format("MMMM D, YYYY")}</p>
               </TableCell>
-              <TableCell>{request.time}</TableCell>
-              <TableCell>{request.subject.name}</TableCell>
-              <TableCell>{request.teacher.name}</TableCell>
-              <TableCell>
+              <TableCell className="text-center">{request.time}</TableCell>
+              <TableCell className="text-center">
+                {request.subject.name}
+              </TableCell>
+              <TableCell className="text-center">
+                {request.teacher.name}
+              </TableCell>
+              <TableCell className="flex justify-end">
                 <TableActions id={request.id} />
               </TableCell>
             </TableRow>

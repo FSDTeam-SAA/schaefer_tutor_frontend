@@ -2,7 +2,14 @@
 
 import { updateLessonStatusAction } from "@/action/lesson";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { MoreHorizontal } from "lucide-react";
 import { useTransition } from "react";
 import { toast } from "sonner";
 
@@ -46,30 +53,41 @@ export function TableActions({ id }: TableActionsProps) {
 
   // Otherwise, show the action buttons
   return (
-    <div className="flex space-x-2">
-      <Button
-        size="sm"
-        className={cn(
-          "bg-green-500 hover:bg-green-600 text-white",
-          cancelPending && "cursor-not-allowed"
-        )}
-        disabled={acceptPending}
-        onClick={handleAccept}
-      >
-        Accept
-      </Button>
-      <Button
-        size="sm"
-        variant="destructive"
-        className={cn(
-          "bg-red-500 hover:bg-red-600 text-white",
-          acceptPending && "cursor-not-allowed"
-        )}
-        onClick={handleRefuse}
-        disabled={cancelPending}
-      >
-        Refuse
-      </Button>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <span className="sr-only">Open Menu</span>
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="space-y-2">
+        <DropdownMenuItem asChild>
+          <Button
+            variant="default"
+            className={cn(
+              "bg-green-500 w-full hover:bg-green-600 hover:bg-green-600/80 text-white cursor-pointer",
+              cancelPending && "cursor-not-allowed"
+            )}
+            disabled={acceptPending}
+            onClick={handleAccept}
+          >
+            Accept
+          </Button>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Button
+            variant="default"
+            className={cn(
+              "bg-red-500 w-full hover:bg-red-600 hover:bg-red-600/80 text-white cursor-pointer",
+              acceptPending && "cursor-not-allowed"
+            )}
+            onClick={handleRefuse}
+            disabled={cancelPending}
+          >
+            Refuse
+          </Button>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
