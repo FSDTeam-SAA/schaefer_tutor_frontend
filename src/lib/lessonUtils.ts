@@ -46,3 +46,28 @@ export function filterLessonsByPasthours(lessons: any[]) {
 
   return { isToday, pastHours };
 }
+
+export function isPastDateAndTime(date: Date, time: string): boolean {
+  const now = DateTime.now(); // Current date and time
+
+  // Parse the given date into a Luxon DateTime object
+  const givenDate = DateTime.fromJSDate(date);
+
+  // Split the time string into components
+  const [timePart, modifier] = time.split(" "); // e.g., "8:00 AM" -> ["8:00", "AM"]
+  const [hours, minutes] = timePart.split(":").map(Number); // e.g., "8:00" -> [8, 0]
+
+  // Convert the time to 24-hour format
+  let hour24 = hours;
+  if (modifier === "PM" && hours !== 12) {
+    hour24 += 12; // Convert PM to 24-hour format
+  } else if (modifier === "AM" && hours === 12) {
+    hour24 = 0; // Midnight case
+  }
+
+  // Combine the given date and time into a single DateTime object
+  const givenDateTime = givenDate.set({ hour: hour24, minute: minutes });
+
+  // Compare the given date and time with the current date and time
+  return givenDateTime < now;
+}

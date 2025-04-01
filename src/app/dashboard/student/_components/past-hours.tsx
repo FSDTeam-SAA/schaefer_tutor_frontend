@@ -17,8 +17,7 @@ export default async function PastHours() {
   if (!session) redirect("/login");
   const data = await prisma.lesson.findMany({
     where: {
-      studentId: session.user.id,
-      status: "accepted",
+      AND: [{ studentId: session.user.id }, { status: "accepted" }],
     },
     include: {
       subject: {

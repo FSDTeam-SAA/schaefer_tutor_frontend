@@ -66,6 +66,7 @@ export function AddTeacherDialog({ subjects, trigger, initialData }: Props) {
               toast.error(res.message);
             } else {
               toast.success(res.message);
+              form.reset();
             }
           })
           .catch((err) => {
@@ -83,6 +84,7 @@ export function AddTeacherDialog({ subjects, trigger, initialData }: Props) {
               toast.error(res.message);
             } else {
               toast.success(res.message);
+              form.reset();
             }
           })
           .catch((err) => {

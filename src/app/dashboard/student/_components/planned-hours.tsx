@@ -20,9 +20,7 @@ export default async function PlannedHours() {
   const data = await prisma.lesson.findMany({
     where: {
       studentId: session.user.id,
-      status: {
-        in: ["accepted", "planned"],
-      },
+      status: "accepted",
       date: {
         gte: new Date(),
       },

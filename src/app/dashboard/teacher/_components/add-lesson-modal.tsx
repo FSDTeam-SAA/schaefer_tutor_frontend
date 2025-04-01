@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { isPastDateAndTime } from "@/lib/lessonUtils";
 import { cn } from "@/lib/utils";
 import { LessonCreateSchema, lessonCreateSchema } from "@/schemas/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -77,11 +78,21 @@ export default function BookLessonModal({
     defaultValues: {
       studentId: initialData?.studentId ?? "",
       time: initialData?.time ?? "",
-      date: initialData?.date ?? new Date(),
+      date: initialData?.date ?? undefined,
     },
   });
 
   function onSubmit(data: LessonCreateSchema) {
+    const isPastTImeSelected = isPastDateAndTime(data.date, data.time);
+
+    // Show warning if the selected date and time are in the past
+    if (isPastTImeSelected) {
+      toast.warning(
+        "The selected date and time are in the past. Please choose a future date and time."
+      );
+      return; // Exit early to prevent further processing
+    }
+
     if (initialData) {
       startTransition(() => {
         editLessonAction(data, initialData?.id).then((res) => {
