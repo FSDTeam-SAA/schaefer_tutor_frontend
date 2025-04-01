@@ -44,23 +44,27 @@ export default async function PlannedHours() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Start time</TableHead>
-            <TableHead>Academic subject</TableHead>
-            <TableHead>Teacher</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead className="flex justify-start">Date</TableHead>
+            <TableHead className="text-center">Start time</TableHead>
+            <TableHead className="text-center">Academic subject</TableHead>
+            <TableHead className="text-center">Teacher</TableHead>
+            <TableHead className="flex justify-end">Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.map((session) => (
             <TableRow key={session.id}>
-              <TableCell className="font-medium">
+              <TableCell className="font-medium flex justify-start">
                 {moment(session.date).format("MMMM D, YYYY")}
               </TableCell>
-              <TableCell>{session.time}</TableCell>
-              <TableCell>{session.subject.name}</TableCell>
-              <TableCell>{session.teacher.name}</TableCell>
-              <TableCell>
+              <TableCell className="text-center">{session.time}</TableCell>
+              <TableCell className="text-center">
+                {session.subject.name}
+              </TableCell>
+              <TableCell className="text-center">
+                {session.teacher.name}
+              </TableCell>
+              <TableCell className="flex justify-end">
                 <Badge
                   className={cn(
                     "rounded-[50px]",
