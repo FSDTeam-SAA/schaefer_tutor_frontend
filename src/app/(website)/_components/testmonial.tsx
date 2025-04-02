@@ -1,6 +1,22 @@
+import { prisma } from "@/lib/prisma";
 import ReviewCard from "./reviewCard";
 
-const Testmonial = () => {
+const Testmonial = async () => {
+  const reviews = await prisma.review.findMany({
+    include: {
+      user: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    take: 3,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  if (reviews.length === 0) return;
   return (
     <div className="py-12 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -8,21 +24,8 @@ const Testmonial = () => {
           Was unsere Schüler sagen
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              name: "Lisa M.",
-              text: "Dank der Nachhilfe habe ich meine Mathenote von 4 auf 2 verbessert! Mein Tutor erklärt alles sehr geduldig und verständlich.",
-            },
-            {
-              name: "Max K.",
-              text: "Die flexible Terminplanung passt perfekt zu meinem vollen Stundenplan. Die Nachhilfe in Englisch hat mir sehr geholfen!",
-            },
-            {
-              name: "Sarah L.",
-              text: "Ich war sehr nervös vor meinem Physik-Abitur, aber mit der Hilfe meines Tutors habe ich mich gut vorbereitet gefühlt und eine 1,7 erreicht!",
-            },
-          ].map((_, index) => (
-            <ReviewCard key={index} />
+          {reviews.map((review) => (
+            <ReviewCard key={review.id} data={review} />
           ))}
         </div>
       </div>
