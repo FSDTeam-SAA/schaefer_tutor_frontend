@@ -1,18 +1,34 @@
-const ReviewCard = () => {
+import { Review } from "@prisma/client";
+
+interface ReviewWithUser extends Review {
+  user: {
+    name: string | null;
+  };
+}
+
+interface Props {
+  data: ReviewWithUser;
+}
+
+const ReviewCard = ({ data }: Props) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <div className="flex items-center mb-4">
         <div className="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
-          L
+          {data.user.name ? data.user.name.charAt(0).toUpperCase() : "U"}
         </div>
         <div className="ml-4">
-          <h3 className="text-lg font-semibold text-gray-900">Max K</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            {data.user.name || "Unknown User"}
+          </h3>
           <div className="flex text-yellow-400">
             {[...Array(5)].map((_, i) => (
               <svg
                 key={i}
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
+                className={`h-5 w-5 ${
+                  i < data.rating ? "text-yellow-400" : "text-gray-300"
+                }`}
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -22,10 +38,7 @@ const ReviewCard = () => {
           </div>
         </div>
       </div>
-      <p className="text-gray-600">
-        Dank der Nachhilfe habe ich meine Mathenote von 4 auf 2 verbessert! Mein
-        Tutor erklärt alles sehr geduldig und verständlich.
-      </p>
+      <p className="text-gray-600">{data.message}</p>
     </div>
   );
 };
