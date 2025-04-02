@@ -11,11 +11,11 @@ const Navbar = async () => {
     <nav className="bg-white shadow-md">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex items-center">
+          <Link href="/" className="flex items-center  cursor-pointer">
             <span className="text-blue-600 font-bold text-xl">
               Schäfer Tutoring
             </span>
-          </div>
+          </Link>
           <div className="flex items-center space-x-4">
             {!session && (
               <Button effect="gooeyLeft" asChild>

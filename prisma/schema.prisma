@@ -8,17 +8,17 @@ generator client {
 }
 
 model User {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  name String?
-  email String? @unique
-  password String
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String?         @unique
+  password      String
   emailVerified DateTime?
-  image String?
-  phone String?
-  profileImage String?
-  role Role @default(student)
-  accounts Account[]
-  sessions Session[]
+  image         String?
+  phone         String?
+  profileImage  String?
+  role          Role            @default(student)
+  accounts      Account[]
+  sessions      Session[]
   Authenticator Authenticator[]
 
   // For teachers who have subjects
@@ -27,27 +27,28 @@ model User {
   // Relations for lessons
   teacherLessons Lesson[] @relation(name: "TeacherLessons")
   studentLessons Lesson[] @relation(name: "StudentLessons")
+  reviews        Review[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Lesson {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
   teacherId String @db.ObjectId
   studentId String @db.ObjectId
   subjectId String @db.ObjectId
 
-  date DateTime
-  time String
+  date   DateTime
+  time   String
   status LessonStatus @default(planned)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relationships with explicit names
-  teacher User @relation(name: "TeacherLessons", fields: [teacherId], references: [id], onDelete: Cascade)
-  student User @relation(name: "StudentLessons", fields: [studentId], references: [id], onDelete: Cascade)
+  teacher User    @relation(name: "TeacherLessons", fields: [teacherId], references: [id], onDelete: Cascade)
+  student User    @relation(name: "StudentLessons", fields: [studentId], references: [id], onDelete: Cascade)
   subject Subject @relation(name: "SubjectLessons", fields: [subjectId], references: [id], onDelete: Cascade)
 
   @@index([teacherId])
@@ -55,12 +56,11 @@ model Lesson {
   @@index([subjectId])
 }
 
-
- enum Role {
+enum Role {
   student
   teacher
   admin
-} 
+}
 
 model Account {
   id                String  @id @default(auto()) @map("_id") @db.ObjectId
@@ -124,18 +124,12 @@ model Subject {
   id   String @id @default(auto()) @map("_id") @db.ObjectId
   name String
 
-
   // Relation with Lesson
   lessons Lesson[] @relation(name: "SubjectLessons")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
-
-
-
-
 
 enum LessonStatus {
   now
@@ -145,12 +139,22 @@ enum LessonStatus {
 }
 
 model Assignment {
-  id            String       @id @default(auto()) @map("_id") @db.ObjectId
-  attachment    String?      // URL or file path for the attachment
-  description   String?
-  studentId      String @db.ObjectId
-  teacherId String @db.ObjectId
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  attachment  String? // URL or file path for the attachment
+  description String?
+  studentId   String  @db.ObjectId
+  teacherId   String  @db.ObjectId
 
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
+  rating    Int
+  message   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
