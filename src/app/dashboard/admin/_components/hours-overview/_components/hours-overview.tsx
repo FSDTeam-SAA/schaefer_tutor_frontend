@@ -20,7 +20,7 @@ export default function HoursOverview() {
     queryKey: ["hours", selectedStatus, page],
     queryFn: async () =>
       fetch(
-        `/api/admin/hours?status=${selectedStatus}&page=${page}&pageSize=1`
+        `/api/admin/hours?status=${selectedStatus}&page=${page}&pageSize=5`
       ).then((res) => res.json()),
   });
 

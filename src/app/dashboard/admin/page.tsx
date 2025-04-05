@@ -1,4 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import DataExport from "./_components/data-export/data-export";
 import HoursOverview from "./_components/hours-overview/_components/hours-overview";
 import SubjectContainer from "./_components/subjects/subject-container";
 import TeacherOverview from "./_components/teacher/teacher-overview";
@@ -35,9 +36,7 @@ export default function Dashboard() {
             <SubjectContainer />
           </TabsContent>
           <TabsContent value="export">
-            <div className="rounded-lg border p-8 text-center">
-              Export content would go here
-            </div>
+            <DataExport />
           </TabsContent>
         </Tabs>
       </main>
