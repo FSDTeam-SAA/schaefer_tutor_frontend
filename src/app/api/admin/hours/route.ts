@@ -8,6 +8,22 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status") as $Enums.LessonStatus & "all";
 
+    const page = Number.parseInt(searchParams.get("page") || "1", 10);
+    const pageSize = Number.parseInt(searchParams.get("pageSize") || "10", 10);
+
+    // Calculate skip value for pagination
+    const skip = (page - 1) * pageSize;
+
+    // Get total count for pagination
+    const totalCount = await prisma.lesson.count({
+      where: {
+        status: status === "all" ? undefined : status,
+      },
+    });
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalCount / pageSize);
+
     // Fetch hours with related teacher and pupil data
     const hours = await prisma.lesson.findMany({
       where: {
@@ -33,11 +49,19 @@ export async function GET(request: Request) {
       orderBy: {
         date: "desc",
       },
+      skip: skip,
+      take: pageSize,
     });
 
     // all,
 
-    return NextResponse.json(hours ?? [], { status: 200 });
+    return NextResponse.json({
+      hours,
+      totalCount,
+      totalPages,
+      currentPage: page,
+      pageSize,
+    });
   } catch (error) {
     console.error("Error fetching hours:", error);
     return NextResponse.json(

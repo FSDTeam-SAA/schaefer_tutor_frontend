@@ -34,6 +34,19 @@ const PlannedHoursAction = ({ data, students }: Props) => {
     });
   };
 
+  const onCommplete = () => {
+    startTransition(() => {
+      updateLessonStatusAction(data.id, "carried_out").then((res) => {
+        if (!res.success) {
+          toast.error(res.message);
+          return;
+        } else {
+          toast.success("Lesson caneled successfully");
+        }
+      });
+    });
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -43,17 +56,19 @@ const PlannedHoursAction = ({ data, students }: Props) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="space-y-2">
-        <DropdownMenuItem asChild>
-          <BookLessonModal
-            students={students ?? []}
-            initialData={data}
-            trigger={
-              <Button className="w-full" size="sm">
-                Move
-              </Button>
-            }
-          />
-        </DropdownMenuItem>
+        {data.status === "planned" && (
+          <DropdownMenuItem asChild>
+            <BookLessonModal
+              students={students ?? []}
+              initialData={data}
+              trigger={
+                <Button className="w-full" size="sm">
+                  Move
+                </Button>
+              }
+            />
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuItem asChild>
           <Button
@@ -66,11 +81,16 @@ const PlannedHoursAction = ({ data, students }: Props) => {
             {cancelPending ? "Cancelling..." : "Cancel"}
           </Button>
         </DropdownMenuItem>
-        {/* <DropdownMenuItem>
-          <span className="bg-green-500 text-white py-1 px-3 rounded-md w-full text-center">
-            At the moment
-          </span>
-        </DropdownMenuItem> */}
+        <DropdownMenuItem asChild>
+          <Button
+            className="w-full"
+            size="sm"
+            onClick={onCommplete}
+            disabled={cancelPending}
+          >
+            Complete
+          </Button>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

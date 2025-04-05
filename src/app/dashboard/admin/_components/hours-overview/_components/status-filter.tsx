@@ -1,8 +1,9 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { $Enums } from "@prisma/client";
 
-export type Status = "planned" | "accepted" | "CARRIED_OUT" | "all";
+export type Status = $Enums.LessonStatus | "all";
 
 interface StatusFilterProps {
   selectedStatus: Status;
@@ -51,10 +52,10 @@ export default function StatusFilter({
           Planned
         </button>
         <button
-          onClick={() => onStatusChange("CARRIED_OUT")}
+          onClick={() => onStatusChange("carried_out")}
           className={cn(
             "px-4 py-2 text-sm rounded-md border",
-            selectedStatus === "CARRIED_OUT"
+            selectedStatus === "carried_out"
               ? "bg-primary/10 border-primary/30 text-primary font-medium"
               : "bg-background hover:bg-muted"
           )}
