@@ -1,4 +1,5 @@
 import NProgress from "@/components/providers/NProgress";
+import AppProvider from "@/provider/AppProvider";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Toaster } from "sonner";
@@ -31,7 +32,7 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <AppProvider>{children}</AppProvider>
         <Toaster richColors closeButton />
         <NProgress />
       </body>

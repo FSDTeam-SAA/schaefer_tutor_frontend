@@ -1,4 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import HoursOverview from "./_components/hours-overview/_components/hours-overview";
 import SubjectContainer from "./_components/subjects/subject-container";
 import TeacherOverview from "./_components/teacher/teacher-overview";
 export default function Dashboard() {
@@ -28,9 +29,7 @@ export default function Dashboard() {
             </div>
           </TabsContent>
           <TabsContent value="hours">
-            <div className="rounded-lg border p-8 text-center">
-              Hours content would go here
-            </div>
+            <HoursOverview />
           </TabsContent>
           <TabsContent value="subjects">
             <SubjectContainer />
