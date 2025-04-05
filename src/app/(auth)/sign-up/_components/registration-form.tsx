@@ -21,16 +21,19 @@ import * as z from "zod";
 
 import { RegistrationAction } from "@/action/authentication";
 import { PasswordInput } from "@/components/ui/password-input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { registrationSchema } from "@/schemas/schema";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-
-export const registrationSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
-  password: z.string(),
-  phone: z.string(),
-  name: z.string(),
-});
 
 export default function RegistrationForm() {
   const [isPending, startTransition] = useTransition();
@@ -155,6 +158,30 @@ export default function RegistrationForm() {
                 </FormControl>
 
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="role"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>As</FormLabel>
+                <FormControl>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Who you are?" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Role</SelectLabel>
+                        <SelectItem value="student">Student</SelectItem>
+                        <SelectItem value="teacher">Teacher</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
               </FormItem>
             )}
           />

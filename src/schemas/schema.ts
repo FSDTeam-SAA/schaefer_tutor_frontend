@@ -5,6 +5,7 @@ export const registrationSchema = z.object({
   password: z.string(),
   phone: z.string(),
   name: z.string(),
+  role: z.enum(["student", "teacher"]),
 });
 
 export const loginSchema = z.object({
