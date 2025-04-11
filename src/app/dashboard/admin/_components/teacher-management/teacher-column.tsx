@@ -8,4 +8,12 @@ export const TeacherColumns: ColumnDef<User>[] = [
     accessorKey: "name",
     header: "Name",
   },
+  {
+    accessorKey: "phone",
+    header: "Phone",
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
 ];

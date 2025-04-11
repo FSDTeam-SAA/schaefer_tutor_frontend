@@ -5,10 +5,13 @@ import { Input } from "@/components/ui/input";
 import { User } from "@prisma/client";
 import {
   ColumnDef,
+  ColumnFiltersState,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useState } from "react";
 
 interface Props {
   data: User[];
@@ -16,25 +19,31 @@ interface Props {
 }
 
 const TeacherTableContainer = ({ data, columns }: Props) => {
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      columnFilters,
+    },
   });
   return (
     <div>
       <div className="flex justify-between items-center py-4">
         <Input
-          placeholder="Search by transaction ID"
-          value={String(table.getColumn("email")?.getFilterValue() ?? "")}
+          placeholder="Filter emails..."
+          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("email")?.setFilterValue(event.target.value)
           }
-          className="max-w-[300px] focus-visible:ring-[#3a6f54]"
+          className="max-w-sm"
         />
       </div>
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} table={table} />
     </div>
   );
 };
