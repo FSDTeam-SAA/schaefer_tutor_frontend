@@ -2,10 +2,14 @@ import { prisma } from "@/lib/prisma";
 import { format } from "date-fns";
 import * as ExcelJS from "exceljs";
 import { Parser } from "json2csv";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import PDFDocument from "pdfkit";
 
-export async function GET(request: Request) {
+export const dynamic = "force-dynamic"; // Disable static generation
+export const revalidate = 0; // Disable caching
+export const fetchCache = "force-no-store"; // Always fetch fresh data
+
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const from = searchParams.get("from");

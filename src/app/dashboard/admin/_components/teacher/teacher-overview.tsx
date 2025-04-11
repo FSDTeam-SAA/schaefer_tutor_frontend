@@ -26,6 +26,24 @@ export default async function TeacherOverview() {
     where: {
       role: "teacher",
     },
+    include: {
+      teacherLessons: {
+        select: {
+          studentId: true,
+        },
+      },
+    },
+  });
+
+  // Add uniqueStudentCount to each teacher object
+  const teachersAre = teachers.map((teacher) => {
+    const uniqueStudentIds = new Set(
+      teacher.teacherLessons.map((lesson) => lesson.studentId)
+    );
+    return {
+      ...teacher, // Spread the original teacher object
+      uniqueStudentCount: uniqueStudentIds.size, // Add the uniqueStudentCount property
+    };
   });
 
   return (
@@ -49,23 +67,29 @@ export default async function TeacherOverview() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {teachers.map((teacher: User) => (
-              <TableRow key={teacher.id}>
-                <TableCell>{teacher.name}</TableCell>
-                <TableCell>{teacher.email}</TableCell>
-                <TableCell>
-                  <div className="space-x-2">
-                    <Badge className="text-[10px] rounded-[50px] px-2">
-                      {teacher.subjects}
-                    </Badge>
-                  </div>
-                </TableCell>
-                <TableCell>0</TableCell>
-                <TableCell>
-                  <TeacherAction subjects={subjects} data={teacher} />
-                </TableCell>
-              </TableRow>
-            ))}
+            {teachersAre.map(
+              (
+                teacher: User & {
+                  uniqueStudentCount: number;
+                }
+              ) => (
+                <TableRow key={teacher.id}>
+                  <TableCell>{teacher.name}</TableCell>
+                  <TableCell>{teacher.email}</TableCell>
+                  <TableCell>
+                    <div className="space-x-2">
+                      <Badge className="text-[10px] rounded-[50px] px-2">
+                        {teacher.subjects}
+                      </Badge>
+                    </div>
+                  </TableCell>
+                  <TableCell>{teacher.uniqueStudentCount}</TableCell>
+                  <TableCell>
+                    <TeacherAction subjects={subjects} data={teacher} />
+                  </TableCell>
+                </TableRow>
+              )
+            )}
           </TableBody>
         </Table>
       </div>
