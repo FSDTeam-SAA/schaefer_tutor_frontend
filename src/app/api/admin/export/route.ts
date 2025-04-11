@@ -92,7 +92,7 @@ export async function GET(request: Request) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function handleCsvExport(data: any[]) {
+function handleCsvExport(data: any[]) {
   try {
     const fields = [
       //   "id",
