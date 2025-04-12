@@ -11,7 +11,7 @@ export const fetchCache = "force-no-store"; // Always fetch fresh data
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
     const from = searchParams.get("from");
     const to = searchParams.get("to");
     const exportFormat = searchParams.get("format") || "csv";
