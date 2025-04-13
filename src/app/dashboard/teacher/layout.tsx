@@ -7,7 +7,7 @@ import { auth } from "@/auth";
 import { Role } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { ReactNode } from "react";
-import { studentDashboardTabLists } from "../_components/data";
+import { teacherDashboardTabLists } from "../_components/data";
 const DashboardContent = dynamic(
   () => import("@/app/dashboard/_components/dashboard-content"),
   {
@@ -15,7 +15,7 @@ const DashboardContent = dynamic(
   }
 );
 
-export default async function StuudentDashboardLayout({
+export default async function TeacherDashboardLayout({
   children,
 }: {
   children: ReactNode;
@@ -29,13 +29,13 @@ export default async function StuudentDashboardLayout({
       <div className="hidden md:block md:col-span-1">
         <DashboardSideBar
           role={user.user.role as Role}
-          tabLists={studentDashboardTabLists}
+          tabLists={teacherDashboardTabLists}
         />
       </div>
       <div className="col-span-6 md:col-span-5 md:px-4 lg:px-6">
         <DashboardContent
           role={user.user.role as Role}
-          tabLists={studentDashboardTabLists}
+          tabLists={teacherDashboardTabLists}
         >
           {children}
         </DashboardContent>

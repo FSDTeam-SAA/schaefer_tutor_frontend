@@ -5,17 +5,21 @@ import { Role } from "@prisma/client";
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { studentDashboardTabLists } from "./data";
+import { Tab } from "./data";
 
 // Components
 
-export default function DashboardSideBar({ role }: { role: Role }) {
+export default function DashboardSideBar({
+  role,
+  tabLists,
+}: {
+  role: Role;
+  tabLists: Tab[];
+}) {
   const pathname = usePathname();
 
   // Filter tabs based on the user's role
-  const filteredTabs = studentDashboardTabLists.filter((tab) =>
-    tab.roles.includes(role)
-  );
+  const filteredTabs = tabLists.filter((tab) => tab.roles.includes(role));
 
   return (
     <div className="md:block hidden h-full">

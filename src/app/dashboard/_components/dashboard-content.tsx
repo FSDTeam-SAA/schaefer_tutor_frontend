@@ -7,24 +7,24 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { ReactNode } from "react";
-import { studentDashboardTabLists } from "./data";
+import { Tab } from "./data";
 
 // Define the props for DashboardContent
 interface DashboardContentProps {
   children: ReactNode;
   role: Role;
+  tabLists: Tab[];
 }
 
 const DashboardContent: React.FC<DashboardContentProps> = ({
   children,
   role,
+  tabLists,
 }) => {
   const pathname = usePathname();
 
   // Filter tabs based on the user's role
-  const filteredTabs = studentDashboardTabLists.filter((tab) =>
-    tab.roles.includes(role)
-  );
+  const filteredTabs = tabLists.filter((tab) => tab.roles.includes(role));
 
   return (
     <div>
