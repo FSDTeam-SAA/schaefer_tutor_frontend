@@ -25,6 +25,16 @@ const PlannedHours = async () => {
     },
   });
 
+  const subjects = await prisma.subject.findMany();
+  const myInfo = await prisma.user.findFirst({
+    where: {
+      id: session.user.id,
+    },
+    select: {
+      subjects: true,
+    },
+  });
+
   const data = await prisma.lesson.findMany({
     where: {
       teacherId: session.user.id,
@@ -45,6 +55,8 @@ const PlannedHours = async () => {
       },
     },
   });
+
+  const mySubjects = subjects.filter((s) => myInfo?.subjects.includes(s.name));
   return (
     <div>
       <h2 className="text-lg font-medium mb-4">Planned hours</h2>
@@ -83,7 +95,11 @@ const PlannedHours = async () => {
                 </Badge>
               </TableCell>
               <TableCell>
-                <PlannedHoursAction data={lesson} students={student} />
+                <PlannedHoursAction
+                  data={lesson}
+                  students={student}
+                  mySubjects={mySubjects}
+                />
               </TableCell>
             </TableRow>
           ))}

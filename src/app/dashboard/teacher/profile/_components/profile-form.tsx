@@ -19,16 +19,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { PhoneInput } from "@/components/ui/phone-input";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  MultiSelector,
+  MultiSelectorContent,
+  MultiSelectorInput,
+  MultiSelectorItem,
+  MultiSelectorList,
+  MultiSelectorTrigger,
+} from "@/components/ui/multi-select";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Separator } from "@/components/ui/separator";
 import { useEdgeStore } from "@/lib/edgestore";
 import {
@@ -198,7 +197,7 @@ const TeacherProfileForm = ({ user, subjects }: Props) => {
                     type="text"
                     placeholder="Your Name"
                     {...field}
-                    className="disabled:opacity-100"
+                    className="disabled:opacity-100 h-[40px]"
                     disabled={!editable}
                   />
                 </FormControl>
@@ -216,7 +215,7 @@ const TeacherProfileForm = ({ user, subjects }: Props) => {
                     type="text"
                     placeholder="Primary Email"
                     {...field}
-                    className="disabled:opacity-70"
+                    className="disabled:opacity-70 h-[40px]"
                     disabled={true}
                   />
                 </FormControl>
@@ -227,7 +226,7 @@ const TeacherProfileForm = ({ user, subjects }: Props) => {
             control={form.control}
             name="phone"
             render={({ field }) => (
-              <FormItem className="flex flex-col items-start">
+              <FormItem className="flex flex-col items-start ">
                 {editable ? (
                   <>
                     <FormLabel>Phone</FormLabel>
@@ -247,6 +246,7 @@ const TeacherProfileForm = ({ user, subjects }: Props) => {
                       {...field}
                       placeholder="Phone number"
                       disabled={!editable}
+                      className="h-[40px] mt-2"
                     />
                   </FormControl>
                 )}
@@ -258,29 +258,29 @@ const TeacherProfileForm = ({ user, subjects }: Props) => {
             control={form.control}
             name="subjects"
             render={({ field }) => (
-              <FormItem className="col-span-2 md:col-span-1">
-                {editable && <FormLabel>Subject</FormLabel>}
+              <FormItem>
                 <FormControl>
-                  <Select
-                    value={field.value}
-                    onValueChange={(val) => field.onChange(val)}
-                    disabled={!editable}
+                  <MultiSelector
+                    values={field.value}
+                    onValuesChange={field.onChange}
+                    loop
+                    className="w-full "
                   >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a subject" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Subjects</SelectLabel>
+                    <MultiSelectorTrigger>
+                      <MultiSelectorInput placeholder="Select subjects" />
+                    </MultiSelectorTrigger>
+                    <MultiSelectorContent>
+                      <MultiSelectorList>
                         {subjects.map(({ id, name }) => (
-                          <SelectItem value={name} key={id}>
+                          <MultiSelectorItem value={name} key={id}>
                             {name}
-                          </SelectItem>
+                          </MultiSelectorItem>
                         ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                      </MultiSelectorList>
+                    </MultiSelectorContent>
+                  </MultiSelector>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />

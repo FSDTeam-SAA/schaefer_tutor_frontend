@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -10,7 +9,6 @@ import {
 } from "@/components/ui/table";
 import { prisma } from "@/lib/prisma";
 import { User } from "@prisma/client";
-import { AddTeacherDialog } from "./add-teacher-dialog";
 import TeacherAction from "./teacher-action";
 export interface Teacher {
   id: string;
@@ -50,10 +48,10 @@ export default async function TeacherOverview() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">Teacher Overview</h2>
-        <AddTeacherDialog
+        {/* <AddTeacherDialog
           subjects={subjects ?? []}
           trigger={<Button effect="gooeyRight">Add new teacher</Button>}
-        />
+        /> */}
       </div>
       <div className="rounded-md border">
         <Table>

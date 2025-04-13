@@ -1,4 +1,4 @@
-import FreeTrialForm from "./_components/free-trial-form";
+import TrialLessonForm from "./_components/free-trial-form";
 import Hero from "./_components/hero";
 import { PricingSection } from "./_components/pricing-section";
 import Subjects from "./_components/subjects";
@@ -24,7 +24,7 @@ const NachhilfeLandingPage = () => {
 
       {/* Contact Form */}
       <div className="w-full bg-white py-20">
-        <FreeTrialForm />
+        <TrialLessonForm />
       </div>
 
       {/* Testimonials */}

@@ -39,6 +39,7 @@ export const lessonCreateSchema = z.object({
   time: z.string({
     required_error: "Bitte wählen Sie eine Startzeit aus",
   }),
+  subject: z.string(),
 });
 
 export type LessonCreateSchema = z.infer<typeof lessonCreateSchema>;
@@ -54,7 +55,7 @@ export const teacherProfileSchema = z.object({
   image: z.string().optional(),
   email: z.string().optional(),
   phone: z.string().optional(),
-  subjects: z.string(),
+  subjects: z.array(z.string()),
 });
 
 export type StudentProfileSchemaType = z.infer<typeof StudentProfileSchema>;
