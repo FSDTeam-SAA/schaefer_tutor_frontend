@@ -2,11 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon, CheckCircle2 } from "lucide-react";
-import { useState } from "react";
+import { CalendarIcon, CheckCircle2, Plus, Trash2 } from "lucide-react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { createAFreeTrialRequest } from "@/action/free-trial";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,7 +21,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { PhoneInput } from "@/components/ui/phone-input";
 import {
   Popover,
   PopoverContent,
@@ -33,59 +33,44 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { freeTrialSchema, FreeTrialSchemaType } from "@/schemas/schema";
+import { Subject } from "@prisma/client";
+import { toast } from "sonner";
 
-const subjects = [
-  { value: "physics", label: "Physics" },
-  { value: "chemistry", label: "Chemistry" },
-  { value: "mathematics", label: "Mathematics" },
-  { value: "biology", label: "Biology" },
-  { value: "accountancy", label: "Accountancy" },
-  { value: "economics", label: "Economics" },
-  { value: "history", label: "History" },
-  { value: "political-science", label: "Political Science" },
-];
+interface Props {
+  subjects: Subject[];
+}
 
-const formSchema = z.object({
-  fullName: z.string().min(2, {
-    message: "Full name must be at least 2 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  phone: z.string().min(6, {
-    message: "Please enter a valid phone number.",
-  }),
-  subject: z.string({
-    required_error: "Please select a subject.",
-  }),
-  date: z.date({
-    required_error: "Please select a date.",
-  }),
-  time: z.string({
-    required_error: "Please select a preferred time.",
-  }),
-  notes: z.string().optional(),
-});
-
-export default function TrialLessonForm() {
+export default function TrialLessonForm({ subjects }: Props) {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof freeTrialSchema>>({
+    resolver: zodResolver(freeTrialSchema),
     defaultValues: {
       fullName: "",
       email: "",
       phone: "",
+      preferredSlots: [{ date: undefined, time: "" }],
       notes: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    setIsSubmitted(true);
-    // Here you would typically send the form data to your backend
+  function onSubmit(values: FreeTrialSchemaType) {
+    startTransition(() => {
+      createAFreeTrialRequest(values).then((res) => {
+        if (!res.success) {
+          toast.error(res.message);
+          return;
+        }
+        // handle success
+        toast.success(res.message);
+        setIsSubmitted(true);
+      });
+    });
   }
 
   const timeSlots = [
@@ -103,6 +88,24 @@ export default function TrialLessonForm() {
     "19:00",
   ];
 
+  // Function to add a new date-time slot
+  const addDateTimeSlot = () => {
+    const currentSlots = form.getValues("preferredSlots");
+    form.setValue("preferredSlots", [
+      ...currentSlots,
+      { date: new Date(), time: "" },
+    ]);
+  };
+
+  // Function to remove a date-time slot
+  const removeDateTimeSlot = (index: number) => {
+    const currentSlots = form.getValues("preferredSlots");
+    if (currentSlots.length > 1) {
+      const updatedSlots = currentSlots.filter((_, i) => i !== index);
+      form.setValue("preferredSlots", updatedSlots);
+    }
+  };
+
   if (isSubmitted) {
     return (
       <div className="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">
@@ -117,19 +120,13 @@ export default function TrialLessonForm() {
             We&apos;ve received your trial lesson request and will contact you
             shortly to confirm the details.
           </p>
-          <Button
-            onClick={() => setIsSubmitted(false)}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            Request another lesson
-          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold text-gray-900 mb-2">
           Request your free trial lesson now!
@@ -145,7 +142,7 @@ export default function TrialLessonForm() {
         <CardContent className="p-6 sm:p-8">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="fullName"
@@ -182,13 +179,7 @@ export default function TrialLessonForm() {
                     <FormItem>
                       <FormLabel>Phone</FormLabel>
                       <FormControl>
-                        <FormControl className="w-full">
-                          <PhoneInput
-                            placeholder="Enter your phone number"
-                            {...field}
-                            defaultCountry="TR"
-                          />
-                        </FormControl>
+                        <Input placeholder="+49 123 456789" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -211,11 +202,8 @@ export default function TrialLessonForm() {
                         </FormControl>
                         <SelectContent>
                           {subjects.map((subject) => (
-                            <SelectItem
-                              key={subject.value}
-                              value={subject.value}
-                            >
-                              {subject.label}
+                            <SelectItem key={subject.id} value={subject.name}>
+                              {subject.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -226,79 +214,127 @@ export default function TrialLessonForm() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Preferred Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <FormLabel className="text-base">
+                    Preferred Dates & Times
+                  </FormLabel>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addDateTimeSlot}
+                    className="flex items-center gap-1"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Option
+                  </Button>
+                </div>
+                <FormDescription className="mb-4">
+                  Please select multiple date and time options that work for
+                  you.
+                </FormDescription>
+
+                {form.watch("preferredSlots").map((_, index) => (
+                  <div key={index} className="flex items-start gap-3 mb-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 flex-1">
+                      <FormField
+                        control={form.control}
+                        name={`preferredSlots.${index}.date`}
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel className="sr-only">Date</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                      "pl-3 text-left font-normal",
+                                      !field.value && "text-muted-foreground"
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      format(field.value, "PPP")
+                                    ) : (
+                                      <span>Pick a date</span>
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                className="w-auto p-0"
+                                align="start"
+                              >
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value}
+                                  onSelect={field.onChange}
+                                  disabled={(date) =>
+                                    date < new Date() ||
+                                    date >
+                                      new Date(
+                                        new Date().setMonth(
+                                          new Date().getMonth() + 2
+                                        )
+                                      )
+                                  }
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`preferredSlots.${index}.time`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="sr-only">Time</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
                             >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date < new Date() ||
-                              date >
-                                new Date(
-                                  new Date().setMonth(new Date().getMonth() + 2)
-                                )
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="time"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Preferred Time</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select a time" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {timeSlots.map((time) => (
+                                  <SelectItem key={time} value={time}>
+                                    {time}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    {form.getValues("preferredSlots").length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeDateTimeSlot(index)}
+                        className="mt-1"
                       >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a time" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {timeSlots.map((time) => (
-                            <SelectItem key={time} value={time}>
-                              {time}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                        <span className="sr-only">Remove</span>
+                      </Button>
+                    )}
+                  </div>
+                ))}
+                {form.formState.errors.preferredSlots?.message && (
+                  <p className="text-sm font-medium text-destructive mt-1">
+                    {form.formState.errors.preferredSlots?.message}
+                  </p>
+                )}
               </div>
 
               <FormField
@@ -323,12 +359,11 @@ export default function TrialLessonForm() {
                 )}
               />
 
-              <Button
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
-              >
-                Submit Request
-              </Button>
+              <SubmitButton
+                pending={isPending}
+                text="Submit Request"
+                className="w-full"
+              />
             </form>
           </Form>
         </CardContent>

@@ -162,13 +162,14 @@ model Review {
 model FreeTrialReq {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   studentEmail String @unique
-  subject String?
-  date DateTime
-  time String
+  fullName String
+  subject String
+  phone String
   notes String?
+  preferredSlots preferredSlots[]
 
   status FreeTrialReqStatus @default(pending)
-  teacherId String @db.ObjectId
+  teacherId String? @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -179,3 +180,16 @@ enum FreeTrialReqStatus {
   accepted
   rejected
 }
+
+
+model preferredSlots {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  date      DateTime
+  time      String
+
+  requestId String    @db.ObjectId // Foreign key referencing FreeTrialReq
+  request   FreeTrialReq @relation(fields: [requestId], references: [id]) // Define the relation
+
+  @@map("preferred_slots") // Optional: Map the model to a specific MongoDB collection name
+}
+
