@@ -1,4 +1,4 @@
-import { Book, HomeIcon, User } from "lucide-react";
+import { Book, GitPullRequestDraft, HomeIcon, User } from "lucide-react";
 import { ReactNode } from "react";
 
 // Function to generate a random ID
@@ -55,6 +55,13 @@ export const teacherDashboardTabLists = [
     path: "/dashboard/teacher/hours",
     icon: <Book className="h-4 w-4" />,
     linkText: "Hours",
+    roles: ["teacher"],
+  },
+  {
+    id: generateRandomId(),
+    path: "/dashboard/teacher/free-trial-requests",
+    icon: <GitPullRequestDraft className="h-4 w-4" />,
+    linkText: "Free Trial Requests",
     roles: ["teacher"],
   },
 ] as Tab[];

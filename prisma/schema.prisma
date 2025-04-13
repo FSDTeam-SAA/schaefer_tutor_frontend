@@ -167,6 +167,8 @@ model FreeTrialReq {
   phone String
   notes String?
   preferredSlots preferredSlots[]
+  date DateTime?
+  time String?
 
   status FreeTrialReqStatus @default(pending)
   teacherId String? @db.ObjectId
@@ -179,6 +181,8 @@ enum FreeTrialReqStatus {
   pending
   accepted
   rejected
+  confirmed
+  completed
 }
 
 

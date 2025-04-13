@@ -265,14 +265,22 @@ const TeacherProfileForm = ({ user, subjects }: Props) => {
                     onValuesChange={field.onChange}
                     loop
                     className="w-full "
+                    disablePointerSelection={!editable}
                   >
                     <MultiSelectorTrigger>
-                      <MultiSelectorInput placeholder="Select subjects" />
+                      <MultiSelectorInput
+                        placeholder="Select subjects"
+                        disabled={!editable}
+                      />
                     </MultiSelectorTrigger>
                     <MultiSelectorContent>
                       <MultiSelectorList>
                         {subjects.map(({ id, name }) => (
-                          <MultiSelectorItem value={name} key={id}>
+                          <MultiSelectorItem
+                            value={name}
+                            key={id}
+                            disabled={!editable}
+                          >
                             {name}
                           </MultiSelectorItem>
                         ))}
