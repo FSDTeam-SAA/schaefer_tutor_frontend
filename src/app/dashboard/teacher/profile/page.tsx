@@ -13,9 +13,11 @@ const Page = async () => {
       id: currentUser.user.id,
     },
   });
+
+  const subjects = await prisma.subject.findMany();
   return (
     <div>
-      <TeacherProfileForm user={user!} />
+      <TeacherProfileForm user={user!} subjects={subjects} />
     </div>
   );
 };

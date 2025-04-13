@@ -8,7 +8,7 @@ import { useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 
 // UI Components
-import { updateProfile } from "@/action/profile";
+import { updateTeacherProfile } from "@/action/profile";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -20,22 +20,32 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useEdgeStore } from "@/lib/edgestore";
 import {
-  StudentProfileSchema,
-  StudentProfileSchemaType,
+  teacherProfileSchema,
+  TeacherProfileSchemaType,
 } from "@/schemas/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User } from "@prisma/client";
+import { Subject, User } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface Props {
   user: User;
+  subjects: Subject[];
 }
 
-const TeacherProfileForm = ({ user }: Props) => {
+const TeacherProfileForm = ({ user, subjects }: Props) => {
   const [editable, setEditable] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [imageLoader, setImageLoader] = useState(false);
@@ -44,13 +54,14 @@ const TeacherProfileForm = ({ user }: Props) => {
   const { edgestore } = useEdgeStore();
   const router = useRouter();
 
-  const form = useForm<StudentProfileSchemaType>({
-    resolver: zodResolver(StudentProfileSchema),
+  const form = useForm<TeacherProfileSchemaType>({
+    resolver: zodResolver(teacherProfileSchema),
     defaultValues: {
       name: user.name ?? "",
       image: user.image ?? "",
       email: user.email ?? "",
       phone: user.phone ?? "",
+      subjects: user.subjects ?? "",
     },
   });
 
@@ -73,9 +84,9 @@ const TeacherProfileForm = ({ user }: Props) => {
     }
   };
 
-  const onSubmit = (data: StudentProfileSchemaType) => {
+  const onSubmit = (data: TeacherProfileSchemaType) => {
     startTransition(() => {
-      updateProfile(data).then((res) => {
+      updateTeacherProfile(data).then((res) => {
         if (!res.success) {
           toast.error(res.message);
           return;
@@ -239,6 +250,37 @@ const TeacherProfileForm = ({ user }: Props) => {
                     />
                   </FormControl>
                 )}
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="subjects"
+            render={({ field }) => (
+              <FormItem className="col-span-2 md:col-span-1">
+                {editable && <FormLabel>Subject</FormLabel>}
+                <FormControl>
+                  <Select
+                    value={field.value}
+                    onValueChange={(val) => field.onChange(val)}
+                    disabled={!editable}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a subject" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Subjects</SelectLabel>
+                        {subjects.map(({ id, name }) => (
+                          <SelectItem value={name} key={id}>
+                            {name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
               </FormItem>
             )}
           />

@@ -49,5 +49,14 @@ export const StudentProfileSchema = z.object({
   email: z.string().optional(),
   phone: z.string().optional(),
 });
+export const teacherProfileSchema = z.object({
+  name: z.string().optional(),
+  image: z.string().optional(),
+  email: z.string().optional(),
+  phone: z.string().optional(),
+  subjects: z.string(),
+});
 
 export type StudentProfileSchemaType = z.infer<typeof StudentProfileSchema>;
+
+export type TeacherProfileSchemaType = z.infer<typeof teacherProfileSchema>;
