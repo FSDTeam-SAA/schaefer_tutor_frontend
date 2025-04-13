@@ -42,3 +42,12 @@ export const lessonCreateSchema = z.object({
 });
 
 export type LessonCreateSchema = z.infer<typeof lessonCreateSchema>;
+
+export const StudentProfileSchema = z.object({
+  name: z.string().optional(),
+  image: z.string().optional(),
+  email: z.string().optional(),
+  phone: z.string().optional(),
+});
+
+export type StudentProfileSchemaType = z.infer<typeof StudentProfileSchema>;

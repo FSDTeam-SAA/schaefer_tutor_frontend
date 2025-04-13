@@ -15,7 +15,6 @@ model User {
   emailVerified DateTime?
   image         String?
   phone         String?
-  profileImage  String?
   role          Role            @default(student)
   accounts      Account[]
   sessions      Session[]
