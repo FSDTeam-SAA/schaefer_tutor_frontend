@@ -1,8 +1,11 @@
 "use server";
 
 import { auth } from "@/auth";
+import FreeTrialConfirmationEmail from "@/email-templates/free-trial-confirmation-email";
 import { prisma } from "@/lib/prisma";
+import { resend } from "@/lib/resend";
 import { FreeTrialSchemaType } from "@/schemas/schema";
+import moment from "moment";
 import { revalidatePath } from "next/cache";
 
 export async function createAFreeTrialRequest(data: FreeTrialSchemaType) {
@@ -92,6 +95,21 @@ export const OnAcceptFreeTrialReq = async ({
     });
 
     // send email to the student
+    const data = await resend.emails.send({
+      from: "Schaefer Tutor <support@schaefer-tutoring.com>",
+      to: [updatedRequest.studentEmail],
+      subject: "Your Free Trial Session with Schaefer Tutor",
+      react: FreeTrialConfirmationEmail({
+        studentName: updatedRequest.fullName,
+        teacherName: currentUser.user.name as string,
+        sessionDate: moment(date).format("D MMMM, YYYY"),
+        sessionTime: time,
+        sessionSubject: updatedRequest.subject,
+        confirmationLink: `https://schaefertutor.com/confirm/${Date.now()}`,
+      }),
+    });
+
+    console.log(data);
 
     revalidatePath("/dashboard/teacher/free-trial-requests");
 
