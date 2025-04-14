@@ -13,19 +13,53 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-import { Check, X } from "lucide-react";
+import { OnAcceptFreeTrialReq } from "@/action/free-trial";
+import { Check, Loader2, X } from "lucide-react";
 import moment from "moment";
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
 import { FreeTrialWithSlot } from "./free-trial-column";
 
 interface Props {
   data: FreeTrialWithSlot;
 }
 const FreeTrialRequesAction = ({ data }: Props) => {
+  const [openAcceptModal, setOpenAcceptModal] = useState(false);
   const [selectedDateTime, setSelectedDateTime] = useState<string>("");
+  const [isAccepting, startAccepting] = useTransition();
+
+  const onAccpet = () => {
+    const time = data.preferredSlots.find(
+      (slot) => slot.id === selectedDateTime
+    );
+
+    if (!time?.date || !time.time) {
+      toast.warning("Please select a time");
+      return;
+    }
+
+    startAccepting(() => {
+      OnAcceptFreeTrialReq({
+        date: time.date,
+        time: time.time,
+        reqId: data.id,
+      }).then((res) => {
+        if (!res.success) {
+          toast.error(res.message);
+          return;
+        }
+
+        // handle success
+        toast.success(res.message);
+        setSelectedDateTime("");
+        setOpenAcceptModal(false);
+      });
+    });
+  };
+
   return (
     <div className="space-x-3">
-      <AlertDialog>
+      <AlertDialog open={openAcceptModal} onOpenChange={setOpenAcceptModal}>
         <AlertDialogTrigger asChild>
           <Button size="icon" variant="outline">
             <Check />
@@ -71,7 +105,12 @@ const FreeTrialRequesAction = ({ data }: Props) => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction>Continue</AlertDialogAction>
+            <Button
+              disabled={!selectedDateTime || isAccepting}
+              onClick={onAccpet}
+            >
+              Continue {isAccepting && <Loader2 className="animate-spin" />}
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
