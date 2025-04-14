@@ -6,7 +6,7 @@ const DashboardNav = async () => {
   const session = await auth();
   return (
     <nav className="bg-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto ">
         <div className="flex justify-between h-16">
           <Link href="/" className="flex items-center  cursor-pointer">
             <span className="text-blue-600 font-bold text-xl">

@@ -17,7 +17,7 @@ export async function createLessonAction(input: LessonCreateSchema) {
     };
   }
 
-  const { studentId, date, time } = parsedInput.data;
+  const { studentId, date, time, subject } = parsedInput.data;
 
   const session = await requireUser(); // Ensure that a user is logged in
 
@@ -29,13 +29,12 @@ export async function createLessonAction(input: LessonCreateSchema) {
   }
 
   try {
-    const subjects = await prisma.subject.findMany();
     // Step 2: Check if the teacher and student exist
-    const teacherExists = await prisma.user.findUnique({
+    const teacherExists = await prisma.user.findFirst({
       where: { id: session.user.id },
     });
 
-    const studentExists = await prisma.user.findUnique({
+    const studentExists = await prisma.user.findFirst({
       where: { id: studentId },
     });
 
@@ -53,17 +52,6 @@ export async function createLessonAction(input: LessonCreateSchema) {
       };
     }
 
-    const subject = subjects.find(
-      (item) => item.name === teacherExists.subjects
-    );
-
-    if (!subject) {
-      return {
-        success: false,
-        message: "Subject not found",
-      };
-    }
-
     // Step 3: Create the lesson
     const newLesson = await prisma.lesson.create({
       data: {
@@ -72,7 +60,7 @@ export async function createLessonAction(input: LessonCreateSchema) {
         date,
         time,
         status: "planned", // Default status for a new lesson
-        subjectId: subject.id,
+        subjectId: subject,
       },
     });
 
@@ -87,6 +75,7 @@ export async function createLessonAction(input: LessonCreateSchema) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
+    console.log(error);
     // Step 4: Handle errors
     return {
       success: false,

@@ -1,12 +1,7 @@
 "use server";
 import { signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import {
-  loginSchema,
-  LoginValues,
-  registrationSchema,
-  teacherCreateSchema,
-} from "@/schemas/schema";
+import { loginSchema, LoginValues, registrationSchema } from "@/schemas/schema";
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import { revalidatePath } from "next/cache";
@@ -124,108 +119,108 @@ export async function LoginAction(data: LoginValues) {
   return redirect(`/dashboard/${user.role}`);
 }
 
-export async function TeacherRegistrationAction(
-  data: z.infer<typeof teacherCreateSchema>
-) {
-  const validationResult = teacherCreateSchema.safeParse(data);
+// export async function TeacherRegistrationAction(
+//   data: z.infer<typeof teacherCreateSchema>
+// ) {
+//   const validationResult = teacherCreateSchema.safeParse(data);
 
-  if (!validationResult.success) {
-    return { errors: validationResult.error.format() };
-  }
+//   if (!validationResult.success) {
+//     return { errors: validationResult.error.format() };
+//   }
 
-  const validatedData = validationResult.data;
+//   const validatedData = validationResult.data;
 
-  // Normalize email
-  const email = validatedData.email.toLowerCase();
+//   // Normalize email
+//   const email = validatedData.email.toLowerCase();
 
-  // Check if teacher already exists
-  const exist = await prisma.user.findUnique({
-    where: { email },
-  });
+//   // Check if teacher already exists
+//   const exist = await prisma.user.findUnique({
+//     where: { email },
+//   });
 
-  if (exist) {
-    return { success: false, message: "User already exists." };
-  }
+//   if (exist) {
+//     return { success: false, message: "User already exists." };
+//   }
 
-  // Hash the password
-  const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+//   // Hash the password
+//   const hashedPassword = await bcrypt.hash(validatedData.password, 10);
 
-  try {
-    // Create the teacher in the database
-    await prisma.user.create({
-      data: {
-        name: validatedData.name,
-        email,
-        password: hashedPassword,
-        role: "teacher",
-        subjects: validatedData.subjectids,
-      },
-    });
+//   try {
+//     // Create the teacher in the database
+//     await prisma.user.create({
+//       data: {
+//         name: validatedData.name,
+//         email,
+//         password: hashedPassword,
+//         role: "teacher",
+//         subjects: validatedData.subjectids,
+//       },
+//     });
 
-    revalidatePath("/dashboard/admin");
+//     revalidatePath("/dashboard/admin");
 
-    return { success: true, message: "Teacher Added successful!" };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any) {
-    return { success: false, message: err.message };
-  }
-}
+//     return { success: true, message: "Teacher Added successful!" };
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   } catch (err: any) {
+//     return { success: false, message: err.message };
+//   }
+// }
 
-export async function TeacherEditAction(
-  data: z.infer<typeof teacherCreateSchema>
-) {
-  const validationResult = teacherCreateSchema.safeParse(data);
+// export async function TeacherEditAction(
+//   data: z.infer<typeof teacherCreateSchema>
+// ) {
+//   const validationResult = teacherCreateSchema.safeParse(data);
 
-  if (!validationResult.success) {
-    return { errors: validationResult.error.format() };
-  }
+//   if (!validationResult.success) {
+//     return { errors: validationResult.error.format() };
+//   }
 
-  const validatedData = validationResult.data;
+//   const validatedData = validationResult.data;
 
-  // Normalize email
-  const email = validatedData.email.toLowerCase();
+//   // Normalize email
+//   const email = validatedData.email.toLowerCase();
 
-  try {
-    // Check if the teacher exists
-    const existingTeacher = await prisma.user.findUnique({
-      where: { email: validatedData.email },
-    });
+//   try {
+//     // Check if the teacher exists
+//     const existingTeacher = await prisma.user.findUnique({
+//       where: { email: validatedData.email },
+//     });
 
-    if (!existingTeacher) {
-      return { success: false, message: "Teacher not found." };
-    }
+//     if (!existingTeacher) {
+//       return { success: false, message: "Teacher not found." };
+//     }
 
-    // Check if the email is being changed and if it already exists for another user
-    if (email !== existingTeacher.email) {
-      const emailExists = await prisma.user.findUnique({
-        where: { email },
-      });
+//     // Check if the email is being changed and if it already exists for another user
+//     if (email !== existingTeacher.email) {
+//       const emailExists = await prisma.user.findUnique({
+//         where: { email },
+//       });
 
-      if (emailExists) {
-        return { success: false, message: "Email is already in use." };
-      }
-    }
+//       if (emailExists) {
+//         return { success: false, message: "Email is already in use." };
+//       }
+//     }
 
-    const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+//     const hashedPassword = await bcrypt.hash(validatedData.password, 10);
 
-    // Perform the update in the database
-    await prisma.user.update({
-      where: { email: validatedData.email },
-      data: {
-        name: validatedData.name,
-        password: hashedPassword,
-        subjects: validatedData.subjectids,
-      },
-    });
+//     // Perform the update in the database
+//     await prisma.user.update({
+//       where: { email: validatedData.email },
+//       data: {
+//         name: validatedData.name,
+//         password: hashedPassword,
+//         subjects: validatedData.subjectids,
+//       },
+//     });
 
-    revalidatePath("/dashboard/admin");
+//     revalidatePath("/dashboard/admin");
 
-    return { success: true, message: "Teacher updated successfully!" };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any) {
-    return { success: false, message: err.message };
-  }
-}
+//     return { success: true, message: "Teacher updated successfully!" };
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   } catch (err: any) {
+//     return { success: false, message: err.message };
+//   }
+// }
 
 export async function RemoveTeacher(id: string) {
   try {

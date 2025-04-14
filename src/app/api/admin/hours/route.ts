@@ -1,11 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: Request) {
+export const dynamic = "force-dynamic";
+
+export async function GET(request: NextRequest) {
   try {
     // Get query parameters for filtering
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get("status") as $Enums.LessonStatus & "all";
 
     const page = Number.parseInt(searchParams.get("page") || "1", 10);

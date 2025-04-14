@@ -39,6 +39,59 @@ export const lessonCreateSchema = z.object({
   time: z.string({
     required_error: "Bitte wählen Sie eine Startzeit aus",
   }),
+  subject: z.string(),
 });
 
 export type LessonCreateSchema = z.infer<typeof lessonCreateSchema>;
+
+export const StudentProfileSchema = z.object({
+  name: z.string().optional(),
+  image: z.string().optional(),
+  email: z.string().optional(),
+  phone: z.string().optional(),
+});
+export const teacherProfileSchema = z.object({
+  name: z.string().optional(),
+  image: z.string().optional(),
+  email: z.string().optional(),
+  phone: z.string().optional(),
+  subjects: z.array(z.string()),
+});
+
+export type StudentProfileSchemaType = z.infer<typeof StudentProfileSchema>;
+
+export type TeacherProfileSchemaType = z.infer<typeof teacherProfileSchema>;
+
+const dateTimeSchema = z.object({
+  date: z
+    .date()
+    .nullable()
+    .refine((val) => val !== null, {
+      message: "Please select a date.",
+    }),
+  time: z.string({
+    required_error: "Please select a preferred time.",
+  }),
+});
+
+export const freeTrialSchema = z.object({
+  fullName: z.string().min(2, {
+    message: "Full name must be at least 2 characters.",
+  }),
+  email: z.string().email({
+    message: "Please enter a valid email address.",
+  }),
+  phone: z.string().min(6, {
+    message: "Please enter a valid phone number.",
+  }),
+  subject: z.string({
+    required_error: "Please select a subject.",
+  }),
+  // Array of date-time pairs
+  preferredSlots: z.array(dateTimeSchema).min(1, {
+    message: "Please add at least one preferred date and time.",
+  }),
+  notes: z.string().optional(),
+});
+
+export type FreeTrialSchemaType = z.infer<typeof freeTrialSchema>;

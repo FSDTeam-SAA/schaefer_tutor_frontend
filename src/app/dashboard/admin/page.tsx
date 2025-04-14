@@ -1,7 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DataExport from "./_components/data-export/data-export";
 import HoursOverview from "./_components/hours-overview/_components/hours-overview";
+import StudentManagement from "./_components/student-management/student-management";
 import SubjectContainer from "./_components/subjects/subject-container";
+import TeacherManagement from "./_components/teacher-management/teacher-management";
 import TeacherOverview from "./_components/teacher/teacher-overview";
 export default function Dashboard() {
   return (
@@ -18,14 +20,13 @@ export default function Dashboard() {
           </TabsList>
           <TabsContent value="teacher">
             <TeacherOverview />
+            <TeacherManagement />
           </TabsContent>
           <TabsContent value="pupils">
-            <div className="rounded-lg border p-8 text-center">
-              Pupils content would go here
-            </div>
+            <StudentManagement />
           </TabsContent>
           <TabsContent value="assignments">
-            <div className="rounded-lg border p-8 text-center">
+            <div className="rounded-lg border  text-center">
               Assignments content would go here
             </div>
           </TabsContent>

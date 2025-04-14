@@ -1,11 +1,14 @@
-import FreeTrialForm from "./_components/free-trial-form";
+import { prisma } from "@/lib/prisma";
+import TrialLessonForm from "./_components/free-trial-form";
 import Hero from "./_components/hero";
 import { PricingSection } from "./_components/pricing-section";
 import Subjects from "./_components/subjects";
 import Testmonial from "./_components/testmonial";
 import WhySchafer from "./_components/why-schafer";
 
-const NachhilfeLandingPage = () => {
+const NachhilfeLandingPage = async () => {
+  const subjects = await prisma.subject.findMany();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white font-sans">
       {/* Navigation */}
@@ -24,7 +27,7 @@ const NachhilfeLandingPage = () => {
 
       {/* Contact Form */}
       <div className="w-full bg-white py-20">
-        <FreeTrialForm />
+        <TrialLessonForm subjects={subjects} />
       </div>
 
       {/* Testimonials */}

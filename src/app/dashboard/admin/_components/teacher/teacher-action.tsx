@@ -3,17 +3,16 @@ import { RemoveTeacher } from "@/action/authentication";
 import AlertModal from "@/components/ui/alert-modal";
 import { Button } from "@/components/ui/button";
 import { Subject, User } from "@prisma/client";
-import { Edit, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { AddTeacherDialog } from "./add-teacher-dialog";
 
 interface Props {
   data: User;
   subjects: Subject[];
 }
 
-const TeacherAction = ({ data, subjects }: Props) => {
+const TeacherAction = ({ data }: Props) => {
   const [pending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
 
@@ -38,7 +37,7 @@ const TeacherAction = ({ data, subjects }: Props) => {
   return (
     <>
       <div className="flex items-center gap-x-4">
-        <AddTeacherDialog
+        {/* <AddTeacherDialog
           trigger={
             <Button variant="outline" size="icon">
               <Edit className="text-blue-500 size-4  hover:text-blue-600 transition duration-300 cursor-pointer" />
@@ -46,7 +45,7 @@ const TeacherAction = ({ data, subjects }: Props) => {
           }
           subjects={subjects}
           initialData={data}
-        />
+        /> */}
         <Button variant="outline" size="sm" onClick={() => setOpen((p) => !p)}>
           <Trash className="text-red-500 size-4 ml-2 hover:text-red-600 transition duration-300 cursor-pointer" />{" "}
           Remove
