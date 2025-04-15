@@ -105,7 +105,7 @@ export const OnAcceptFreeTrialReq = async ({
         sessionDate: moment(date).format("D MMMM, YYYY"),
         sessionTime: time,
         sessionSubject: updatedRequest.subject,
-        confirmationLink: `https://schaefertutor.com/confirm/${Date.now()}`,
+        confirmationLink: `${process.env.NEXTAUTH_URL}/api/confirm/free-trial-req?reqId=${updatedRequest.id}`,
       }),
     });
 

@@ -171,6 +171,7 @@ model FreeTrialReq {
   preferredSlots preferredSlots[]
   date           DateTime?
   time           String?
+  meetingLink    String?
 
   status    FreeTrialReqStatus @default(pending)
   teacherId String?            @db.ObjectId
