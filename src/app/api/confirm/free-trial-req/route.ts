@@ -136,7 +136,9 @@ export async function GET(req: NextRequest) {
       }),
     });
 
-    return NextResponse.redirect(`${process.env.NEXTAUTH_URL}`);
+    return NextResponse.redirect(
+      `${process.env.NEXTAUTH_URL}/success/${freeTrialReq.id}`
+    );
   } catch (error) {
     console.log(error);
     return NextResponse.json(
