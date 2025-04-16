@@ -1,5 +1,5 @@
 "use server";
-import { signIn } from "@/auth";
+import { auth, signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { loginSchema, LoginValues, registrationSchema } from "@/schemas/schema";
 import bcrypt from "bcryptjs";
@@ -246,4 +246,23 @@ export async function RemoveTeacher(id: string) {
   } catch (err: any) {
     return { success: false, message: err.message };
   }
+}
+
+export async function isGreetinsDone() {
+  const cs = await auth();
+
+  if (!cs) {
+    return true;
+  }
+
+  const user = await prisma.user.findFirst({
+    where: {
+      id: cs.user.id,
+    },
+    select: {
+      isGreeting: true,
+    },
+  });
+
+  return user?.isGreeting ?? true;
 }

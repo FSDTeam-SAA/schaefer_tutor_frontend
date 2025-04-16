@@ -18,6 +18,7 @@ model User {
   grantId       String?
   grantEmail    String?
   calendarLink  String?
+  isGreeting    Boolean         @default(false)
   role          Role            @default(student)
   accounts      Account[]
   sessions      Session[]

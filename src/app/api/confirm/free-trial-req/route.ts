@@ -119,8 +119,6 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // send an email to student
-
     // send email to the student
     await resend.emails.send({
       from: "Schaefer Tutor <support@schaefer-tutoring.com>",
