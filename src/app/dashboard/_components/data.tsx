@@ -1,5 +1,8 @@
 import {
+  Bold,
   Book,
+  CassetteTape,
+  CloudDownload,
   GitPullRequestDraft,
   HomeIcon,
   User,
@@ -76,5 +79,50 @@ export const teacherDashboardTabLists = [
     icon: <GitPullRequestDraft className="h-4 w-4" />,
     linkText: "Free Trial Requests",
     roles: ["teacher"],
+  },
+] as Tab[];
+
+export const adminDashboardTabLists = [
+  {
+    id: generateRandomId(),
+    path: "/dashboard/admin",
+    icon: <HomeIcon className="h-4 w-4" />,
+    linkText: "Overview",
+    roles: ["admin"],
+  },
+  {
+    id: generateRandomId(),
+    path: "/dashboard/admin/teacher-management",
+    icon: <CassetteTape className="h-4 w-4" />,
+    linkText: "Teacher ",
+    roles: ["admin"],
+  },
+  {
+    id: generateRandomId(),
+    path: "/dashboard/admin/student-management",
+    icon: <User className="h-4 w-4" />,
+    linkText: "Student",
+    roles: ["admin"],
+  },
+  {
+    id: generateRandomId(),
+    path: "/dashboard/admin/hour-management",
+    icon: <Book className="h-4 w-4" />,
+    linkText: "Hour",
+    roles: ["admin"],
+  },
+  {
+    id: generateRandomId(),
+    path: "/dashboard/admin/subject-management",
+    icon: <Bold className="h-4 w-4" />,
+    linkText: "Subject",
+    roles: ["admin"],
+  },
+  {
+    id: generateRandomId(),
+    path: "/dashboard/admin/data-export",
+    icon: <CloudDownload className="h-4 w-4" />,
+    linkText: "Export",
+    roles: ["admin"],
   },
 ] as Tab[];
