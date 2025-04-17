@@ -8,9 +8,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-export async function RegistrationAction(
-  data: z.infer<typeof registrationSchema>
-) {
+type Val = z.infer<typeof registrationSchema>;
+
+export async function RegistrationAction(data: Val, ref: string | null) {
   const validationResult = registrationSchema.safeParse(data);
 
   if (!validationResult.success) {
@@ -39,7 +39,7 @@ export async function RegistrationAction(
   const hashedPassword = await bcrypt.hash(validatedData.password, 10);
 
   // Create the user in the database
-  await prisma.user.create({
+  const newUser = await prisma.user.create({
     data: {
       email: validatedData.email,
       password: hashedPassword,
@@ -47,6 +47,26 @@ export async function RegistrationAction(
       role: validatedData.role, // Assuming role is part of registrationSchema`
     },
   });
+
+  // update recomendations
+
+  if (ref) {
+    const recommendation = await prisma.recommendation.findFirst({
+      where: {
+        slug: ref,
+      },
+    });
+
+    if (recommendation) {
+      await prisma.participantJoin.create({
+        data: {
+          recommendationId: recommendation.id,
+          participantId: newUser.id,
+          slugId: ref,
+        },
+      });
+    }
+  }
 
   return { success: true, message: "Registration successfully!" }; // 👈 Explicit response
 }

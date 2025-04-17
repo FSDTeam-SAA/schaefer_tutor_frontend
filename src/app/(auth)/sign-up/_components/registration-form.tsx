@@ -32,12 +32,15 @@ import {
 } from "@/components/ui/select";
 import { registrationSchema } from "@/schemas/schema";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 export default function RegistrationForm() {
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState<true | false>(false);
+
+  const searchParams = useSearchParams();
+  const ref = searchParams.get("ref") ?? null;
 
   const router = useRouter();
 
@@ -53,7 +56,7 @@ export default function RegistrationForm() {
 
   async function onSubmit(values: z.infer<typeof registrationSchema>) {
     startTransition(() => {
-      RegistrationAction(values)
+      RegistrationAction(values, ref)
         .then((res) => {
           if (!res.success) {
             toast.error(res.message || "Registration failed.");

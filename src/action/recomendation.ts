@@ -32,10 +32,9 @@ export async function CollectSlugResponse() {
 
   try {
     // Check if a recommendation already exists with the same creator and slug
-    const existingRecommendation = await prisma.recomendation.findFirst({
+    const existingRecommendation = await prisma.recommendation.findFirst({
       where: {
         creator: loggedinUserId,
-        slug: slug,
       },
     });
 
@@ -49,11 +48,10 @@ export async function CollectSlugResponse() {
     }
 
     // If no existing recommendation is found, create a new one
-    const newRecommendation = await prisma.recomendation.create({
+    const newRecommendation = await prisma.recommendation.create({
       data: {
         creator: loggedinUserId,
         slug: slug,
-        participants: [], // Initialize participants as an empty array
       },
     });
 
