@@ -1,10 +1,12 @@
 "use client";
+import { CollectSlugResponse } from "@/action/recomendation";
 import { Button } from "@/components/ui/button";
 import SkeletonWrapper from "@/components/ui/skeleton-wrapper";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { EllipsisVertical, Loader2, Share2 } from "lucide-react";
+import { getBaseUrl } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { EllipsisVertical, Share2 } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import ErrorContainer from "./error-container";
 
@@ -20,49 +22,40 @@ interface Props {
 const ReferralTracking = ({ userId }: Props) => {
   const [isOpen, setOpen] = useState(false);
   const [url, setUrl] = useState("");
+  const [isCollectingSlug, startCollecting] = useTransition();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { isLoading, data, isError, error } = useQuery<any>({
     queryKey: ["my-refer-stats"],
     queryFn: () =>
-      fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/reffer/${userId}`
-      ).then((res) => res.json()),
+      fetch(`${process.env.AUTH_URL}/api/v1/reffer/${userId}`).then((res) =>
+        res.json()
+      ),
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { isPending, mutate: createSlug } = useMutation<any>({
-    mutationKey: ["refer-slug-generate"],
-    mutationFn: () =>
-      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/reffer`, {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          creator: userId,
-        }),
-      }).then((res) => res.json()),
-    onSuccess: (data) => {
-      if (!data.success) {
-        toast.error(data.message, {
-          position: "top-right",
-          richColors: true,
+  const onOpen = () => {
+    const baseURL = getBaseUrl();
+    startCollecting(() => {
+      CollectSlugResponse()
+        .then((res) => {
+          if (!res.success) {
+            toast.error(res.message);
+            return;
+          }
+
+          // handle success
+          setUrl(`${baseURL}/login?ref=${res.slug}`);
+          setOpen(true);
+        })
+        .catch((err) => {
+          toast.error(err.message);
         });
-        return;
-      }
-
-      // handle success
-      setUrl(
-        `${process.env.NEXT_PUBLIC_FRONTEND_URL}/onboarding?ref=${data.data.slug}`
-      );
-      setOpen(true);
-    },
-  });
+    });
+  };
 
   let content;
 
-  if (false) {
+  if (isLoading) {
     content = (
       <div className="grid grid-cols-1 gap-[16px] pb-[56px] md:grid-cols-3">
         <SkeletonWrapper isLoading={isLoading}>
@@ -156,11 +149,11 @@ const ReferralTracking = ({ userId }: Props) => {
             <Button
               size="lg"
               className="flex items-center gap-[8px] px-[16px] py-[14px] text-base font-semibold leading-[19px] text-white"
-              onClick={() => createSlug()}
-              disabled={isPending}
+              onClick={() => onOpen()}
+              disabled={isCollectingSlug}
             >
               <Share2 className="block h-[18px] w-[18px] text-white md:hidden" />{" "}
-              Share QR Code {isPending && <Loader2 className="animate-spin" />}
+              Share QR Code
             </Button>
           </div>
         </div>
