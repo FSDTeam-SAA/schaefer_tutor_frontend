@@ -62,13 +62,13 @@ const ReferralTracking = ({ userId }: Props) => {
 
   let content;
 
-  if (isLoading) {
+  if (false) {
     content = (
       <div className="grid grid-cols-1 gap-[16px] pb-[56px] md:grid-cols-3">
         <SkeletonWrapper isLoading={isLoading}>
           <div className="rounded-[10px] border border-[#E8DFD6] py-4 pl-4 pr-[6px] md:col-span-1">
             <p className="flex items-center justify-between text-sm font-normal leading-[16px] text-[#6B7280]">
-              Total Referrals <EllipsisVertical className="h-[24px] w-[24px]" />
+              Today Referrals <EllipsisVertical className="h-[24px] w-[24px]" />
             </p>
             <p className="pt-[16px] text-2xl font-medium leading-[29px] text-[#1F2937] md:text-3xl md:leading-[36px]">
               68
@@ -78,7 +78,7 @@ const ReferralTracking = ({ userId }: Props) => {
         <SkeletonWrapper isLoading={isLoading}>
           <div className="rounded-[10px] border border-[#E8DFD6] py-4 pl-4 pr-[6px] md:col-span-1">
             <p className="flex items-center justify-between text-sm font-normal leading-[16px] text-[#6B7280]">
-              Amount Deducted For Charity{" "}
+              This Month
               <EllipsisVertical className="h-[24px] w-[24px]" />
             </p>
             <p className="pt-[16px] text-2xl font-medium leading-[29px] text-[#1F2937] md:text-3xl md:leading-[36px]">
@@ -89,7 +89,7 @@ const ReferralTracking = ({ userId }: Props) => {
         <SkeletonWrapper isLoading={isLoading}>
           <div className="rounded-[10px] border border-[#E8DFD6] py-4 pl-4 pr-[6px] md:col-span-1">
             <p className="flex items-center justify-between text-sm font-normal leading-[16px] text-[#6B7280]">
-              Commission Paid <EllipsisVertical className="h-[24px] w-[24px]" />
+              This Year <EllipsisVertical className="h-[24px] w-[24px]" />
             </p>
             <p className="pt-[16px] text-2xl font-medium leading-[29px] text-[#1F2937] md:text-3xl md:leading-[36px]">
               $524.00
@@ -109,7 +109,7 @@ const ReferralTracking = ({ userId }: Props) => {
       <div className="grid grid-cols-1 gap-[16px] pb-[56px] md:grid-cols-3">
         <div className="rounded-[10px] border border-[#E8DFD6] py-4 pl-4 pr-[6px] md:col-span-1">
           <p className="flex items-center justify-between text-sm font-normal leading-[16px] text-[#6B7280]">
-            Total Referrals <EllipsisVertical className="h-[24px] w-[24px]" />
+            Today Referrals <EllipsisVertical className="h-[24px] w-[24px]" />
           </p>
           <p className="pt-[16px] text-2xl font-medium leading-[29px] text-[#1F2937] md:text-3xl md:leading-[36px]">
             {data.data.participants?.length ?? 0}
@@ -117,7 +117,7 @@ const ReferralTracking = ({ userId }: Props) => {
         </div>
         <div className="rounded-[10px] border border-[#E8DFD6] py-4 pl-4 pr-[6px] md:col-span-1">
           <p className="flex items-center justify-between text-sm font-normal leading-[16px] text-[#6B7280]">
-            Commision Remain <EllipsisVertical className="h-[24px] w-[24px]" />
+            This Month <EllipsisVertical className="h-[24px] w-[24px]" />
           </p>
           <p className="pt-[16px] text-2xl font-medium leading-[29px] text-[#1F2937] md:text-3xl md:leading-[36px]">
             ${data?.data?.remain ?? 0}
@@ -125,7 +125,7 @@ const ReferralTracking = ({ userId }: Props) => {
         </div>
         <div className="rounded-[10px] border border-[#E8DFD6] py-4 pl-4 pr-[6px] md:col-span-1">
           <p className="flex items-center justify-between text-sm font-normal leading-[16px] text-[#6B7280]">
-            Commission Paid <EllipsisVertical className="h-[24px] w-[24px]" />
+            This Year <EllipsisVertical className="h-[24px] w-[24px]" />
           </p>
           <p className="pt-[16px] text-2xl font-medium leading-[29px] text-[#1F2937] md:text-3xl md:leading-[36px]">
             ${data.data.paid ?? 0}

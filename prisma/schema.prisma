@@ -199,3 +199,15 @@ model preferredSlots {
 
   @@map("preferred_slots") // Optional: Map the model to a specific MongoDB collection name
 }
+
+model Recomendation {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  creator String @db.ObjectId
+
+  slug String @unique
+
+  participants String[] @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
