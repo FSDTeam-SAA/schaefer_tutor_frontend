@@ -1,4 +1,10 @@
-import { Book, GitPullRequestDraft, HomeIcon, User } from "lucide-react";
+import {
+  Book,
+  GitPullRequestDraft,
+  HomeIcon,
+  User,
+  Waypoints,
+} from "lucide-react";
 import { ReactNode } from "react";
 
 // Function to generate a random ID
@@ -32,6 +38,13 @@ export const studentDashboardTabLists = [
     path: "/dashboard/student/confirmations",
     icon: <Book className="h-4 w-4" />,
     linkText: "Confirmation",
+    roles: ["student"],
+  },
+  {
+    id: generateRandomId(),
+    path: "/dashboard/student/refferal",
+    icon: <Waypoints className="h-4 w-4" />,
+    linkText: "Refferal",
     roles: ["student"],
   },
 ] as Tab[];
