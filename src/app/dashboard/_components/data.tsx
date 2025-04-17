@@ -3,6 +3,7 @@ import {
   Book,
   CassetteTape,
   CloudDownload,
+  DollarSign,
   GitPullRequestDraft,
   HomeIcon,
   User,
@@ -116,6 +117,20 @@ export const adminDashboardTabLists = [
     path: "/dashboard/admin/subject-management",
     icon: <Bold className="h-4 w-4" />,
     linkText: "Subject",
+    roles: ["admin"],
+  },
+  {
+    id: generateRandomId(),
+    path: "/dashboard/admin/price-management",
+    icon: <DollarSign className="h-4 w-4" />,
+    linkText: "Pricing",
+    roles: ["admin"],
+  },
+  {
+    id: generateRandomId(),
+    path: "/dashboard/admin/account-management",
+    icon: <User className="h-4 w-4" />,
+    linkText: "Account",
     roles: ["admin"],
   },
   {
