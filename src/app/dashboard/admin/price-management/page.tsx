@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
+import { prisma } from "@/lib/prisma";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { PricingTable } from "./_components/pricing-table";
 
-const Page = () => {
+const Page = async () => {
+  const pricing = await prisma.pricing.findMany();
+
   return (
     <div className="container mx-auto py-8">
       <div className="flex items-center justify-between mb-8">
@@ -17,7 +20,7 @@ const Page = () => {
       </div>
 
       <div className="bg-white rounded-lg border shadow-sm">
-        <PricingTable />
+        <PricingTable data={pricing} />
       </div>
     </div>
   );

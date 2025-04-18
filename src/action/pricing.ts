@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { PricingFormValues, pricingSchema } from "@/schemas/schema";
+import { revalidatePath } from "next/cache";
 
 export async function createPricing(data: PricingFormValues) {
   const cs = await auth();
@@ -34,9 +35,50 @@ export async function createPricing(data: PricingFormValues) {
       },
     });
 
+    revalidatePath("dashboard/admin/price-management");
+
     return {
       success: true,
       message: "Pricing plan created successfully.",
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+}
+
+export async function PlanDeleteAction(id: string) {
+  const cs = await auth();
+
+  if (!cs?.user) {
+    return {
+      success: false,
+      message: "Unauthorized access",
+    };
+  }
+
+  if (cs.user.role !== "admin") {
+    return {
+      success: false,
+      message: "You don't have access to delete the plan",
+    };
+  }
+
+  try {
+    await prisma.pricing.delete({
+      where: {
+        id,
+      },
+    });
+
+    revalidatePath("dashboard/admin/price-management");
+
+    return {
+      success: true,
+      message: "Plan deleted successfully",
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

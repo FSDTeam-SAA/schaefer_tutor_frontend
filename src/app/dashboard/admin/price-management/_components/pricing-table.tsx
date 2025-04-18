@@ -1,9 +1,10 @@
 "use client";
 
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Loader, Trash } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useTransition } from "react";
 
+import { PlanDeleteAction } from "@/action/pricing";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,43 +26,27 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Pricing } from "@prisma/client";
+import { toast } from "sonner";
 
-// Mock data - in a real app, this would come from your database
-const initialPricingPlans = [
-  {
-    id: "1",
-    name: "Individual lessons",
-    price: 30,
-    unit: "hour",
-    description: "Flexible and non-binding, ideal for occasional support.",
-    isRecommended: false,
-    features: [
-      "Flexible booking",
-      "Individual appointment selection",
-      "No contract",
-    ],
-  },
-  {
-    id: "2",
-    name: "Monthly package",
-    price: 25,
-    unit: "hour",
-    description: "Minimum 4 hours per month, each additional hour also 25€.",
-    isRecommended: true,
-    features: [
-      "20% savings compared to individual lessons",
-      "Guaranteed regular appointments",
-      "Continuous learning progress",
-      "Personal learning plan",
-    ],
-  },
-];
+interface props {
+  data: Pricing[];
+}
 
-export function PricingTable() {
-  const [pricingPlans, setPricingPlans] = useState(initialPricingPlans);
+export function PricingTable({ data }: props) {
+  const [isDeleting, startTransition] = useTransition();
 
   const handleDelete = (id: string) => {
-    setPricingPlans(pricingPlans.filter((plan) => plan.id !== id));
+    startTransition(() => {
+      PlanDeleteAction(id).then((res) => {
+        if (!res.success) {
+          toast.error(res.message);
+        }
+
+        // handle success
+        toast.success(res.message);
+      });
+    });
   };
 
   return (
@@ -77,7 +62,7 @@ export function PricingTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {pricingPlans.map((plan) => (
+        {data.map((plan) => (
           <TableRow key={plan.id}>
             <TableCell className="font-medium">{plan.name}</TableCell>
             <TableCell>
@@ -119,18 +104,15 @@ export function PricingTable() {
                 </Link>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="text-red-500 hover:text-red-600"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      <span className="sr-only">Delete</span>
+                    <Button variant="outline" size="icon">
+                      <Trash className="text-rose-500" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
                       <AlertDialogDescription>
                         This will permanently delete the &quot;{plan.name}&quot;
                         pricing plan. This action cannot be undone.
@@ -139,10 +121,12 @@ export function PricingTable() {
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction
-                        className="bg-red-500 hover:bg-red-600"
+                        disabled={isDeleting}
                         onClick={() => handleDelete(plan.id)}
+                        className="bg-red-500 hover:bg-red-400"
                       >
-                        Delete
+                        Continue{" "}
+                        {isDeleting && <Loader className="animate-spin" />}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
