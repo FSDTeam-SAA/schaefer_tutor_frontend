@@ -9,6 +9,10 @@ const nextConfig = {
       {
         hostname: "files.edgestore.dev",
         protocol: "https"
+      },
+      {
+        hostname: "api.qrserver.com",
+        protocol: "https"
       }
     ],
   },

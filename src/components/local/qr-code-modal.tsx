@@ -1,13 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -84,14 +82,14 @@ export default function QRCodeShareModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="flex flex-row items-center justify-between">
           <DialogTitle>{title}</DialogTitle>
-          <Button
+          {/* <Button
             variant="ghost"
             size="icon"
             onClick={onClose}
             className="h-8 w-8 rounded-full"
           >
             <X className="h-4 w-4" />
-          </Button>
+          </Button> */}
         </DialogHeader>
 
         <div className="flex justify-center py-4">

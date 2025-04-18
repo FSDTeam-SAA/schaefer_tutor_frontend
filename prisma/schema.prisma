@@ -200,14 +200,27 @@ model preferredSlots {
   @@map("preferred_slots") // Optional: Map the model to a specific MongoDB collection name
 }
 
-model Recomendation {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  creator String @db.ObjectId
+model Recommendation {
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  creator      String          @db.ObjectId
+  slug         String          @unique
 
-  slug String @unique
+  // Participants with join timestamps
+  participants ParticipantJoin[]
 
-  participants String[] @db.ObjectId
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+}
+
+// Embedded model to track participant join times
+model ParticipantJoin {
+   id           String          @id @default(auto()) @map("_id") @db.ObjectId
+   
+  recommendationId String   @db.ObjectId
+  participantId    String   @db.ObjectId
+  slugId String
+  joinedAt         DateTime @default(now())
+
+  recommendation Recommendation @relation(fields: [recommendationId], references: [id])
 }
