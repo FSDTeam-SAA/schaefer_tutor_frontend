@@ -8,18 +8,13 @@ import {
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 
-interface PricingFeature {
-  text: string;
-  highlight?: string;
-}
-
 interface PricingCardProps {
   title: string;
   price: string;
   perHour?: boolean;
-  description?: string;
-  features: PricingFeature[];
-  recommended?: boolean;
+  description: string;
+  features: string[];
+  recommended: boolean;
   className?: string;
 }
 
@@ -66,14 +61,7 @@ export function PricingCard({
               <li key={index} className="flex items-start">
                 <Check className="h-5 w-5 text-green-500 shrink-0 mr-2" />
                 <span>
-                  {feature.highlight ? (
-                    <>
-                      <span className="font-medium">{feature.highlight}</span>
-                      {feature.text}
-                    </>
-                  ) : (
-                    feature.text
-                  )}
+                  <span className="font-medium">{feature}</span>
                 </span>
               </li>
             ))}

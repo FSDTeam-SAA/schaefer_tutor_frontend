@@ -29,6 +29,8 @@ const NachhilfeLandingPage = async () => {
     }
   }
 
+  const pricing = await prisma.pricing.findMany();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white font-sans">
       {/* Navigation */}
@@ -43,7 +45,7 @@ const NachhilfeLandingPage = async () => {
       <Subjects />
 
       {/* Pricing */}
-      <PricingSection />
+      <PricingSection data={pricing} />
 
       {/* Contact Form */}
       <div className="w-full bg-white py-20">
