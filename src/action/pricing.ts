@@ -49,6 +49,53 @@ export async function createPricing(data: PricingFormValues) {
     };
   }
 }
+export async function editPricing(data: PricingFormValues, id: string) {
+  const cs = await auth();
+
+  if (!cs?.user) {
+    return {
+      success: false,
+      message: "Unauthorized access",
+    };
+  }
+
+  const parsedValues = pricingSchema.safeParse(data);
+
+  if (!parsedValues.success) {
+    return {
+      success: false,
+      message: parsedValues.error.message,
+    };
+  }
+
+  try {
+    await prisma.pricing.update({
+      where: {
+        id,
+      },
+      data: {
+        name: parsedValues.data.name,
+        description: parsedValues.data.description,
+        price: Number(parsedValues.data.price),
+        features: parsedValues.data.features,
+        isRecommended: parsedValues.data.isRecommended,
+      },
+    });
+
+    revalidatePath("dashboard/admin/price-management");
+
+    return {
+      success: true,
+      message: "Pricing plan updated successfully.",
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+}
 
 export async function PlanDeleteAction(id: string) {
   const cs = await auth();

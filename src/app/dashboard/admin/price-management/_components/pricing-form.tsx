@@ -5,9 +5,9 @@ import { useForm } from "react-hook-form";
 
 import { Check, Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 
-import { createPricing } from "@/action/pricing";
+import { createPricing, editPricing } from "@/action/pricing";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -25,44 +25,11 @@ import { PricingFormValues, pricingSchema } from "@/schemas/schema";
 import { Pricing } from "@prisma/client";
 import { toast } from "sonner";
 
-// --- Zod Schema ---
-
-const initialPricingPlans = [
-  {
-    id: "1",
-    name: "Individual lessons",
-    price: 30,
-    unit: "hour",
-    description: "Flexible and non-binding, ideal for occasional support.",
-    isRecommended: false,
-    features: [
-      "Flexible booking",
-      "Individual appointment selection",
-      "No contract",
-    ],
-  },
-  {
-    id: "2",
-    name: "Monthly package",
-    price: 25,
-    unit: "hour",
-    description: "Minimum 4 hours per month, each additional hour also 25€.",
-    isRecommended: true,
-    features: [
-      "20% savings compared to individual lessons",
-      "Guaranteed regular appointments",
-      "Continuous learning progress",
-      "Personal learning plan",
-    ],
-  },
-];
-
 interface PricingFormProps {
-  id?: string;
   initialvalue?: Pricing;
 }
 
-export function PricingForm({ id, initialvalue }: PricingFormProps) {
+export function PricingForm({ initialvalue }: PricingFormProps) {
   const router = useRouter();
   const [newFeature, setNewFeature] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -70,30 +37,15 @@ export function PricingForm({ id, initialvalue }: PricingFormProps) {
   const form = useForm<PricingFormValues>({
     resolver: zodResolver(pricingSchema),
     defaultValues: {
-      name: "",
-      price: "",
-      description: "",
-      isRecommended: false,
-      features: [],
+      name: initialvalue?.name ?? "",
+      price: initialvalue?.price.toString() ?? "",
+      description: initialvalue?.description ?? "",
+      isRecommended: initialvalue?.isRecommended ?? false,
+      features: initialvalue?.features ?? [],
     },
   });
 
-  const { handleSubmit, setValue, getValues, control, reset, watch } = form;
-
-  useEffect(() => {
-    if (id) {
-      const plan = initialPricingPlans.find((plan) => plan.id === id);
-      if (plan) {
-        reset({
-          name: plan.name,
-          price: plan.price.toString(),
-          description: plan.description,
-          isRecommended: plan.isRecommended,
-          features: plan.features,
-        });
-      }
-    }
-  }, [id, reset]);
+  const { handleSubmit, setValue, getValues, control, watch } = form;
 
   const addFeature = () => {
     const trimmed = newFeature.trim();
@@ -111,6 +63,17 @@ export function PricingForm({ id, initialvalue }: PricingFormProps) {
 
   const onSubmit = (data: PricingFormValues) => {
     if (initialvalue) {
+      startTransition(() => {
+        editPricing(data, initialvalue.id).then((res) => {
+          if (!res.success) {
+            toast.error(res.message);
+          }
+
+          // handle success
+          toast.success(res.message);
+          router.back();
+        });
+      });
     } else {
       startTransition(() => {
         createPricing(data).then((res) => {
@@ -253,7 +216,7 @@ export function PricingForm({ id, initialvalue }: PricingFormProps) {
             Cancel
           </Button>
           <Button type="submit" disabled={isPending}>
-            {id ? "Update Plan" : "Create Plan"}
+            {initialvalue ? "Save Now" : "Create Plan"}
           </Button>
         </div>
       </form>
