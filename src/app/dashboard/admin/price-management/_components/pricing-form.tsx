@@ -1,6 +1,8 @@
 "use client";
 
-import type React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 import { Check, Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -8,12 +10,32 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
-// Mock data - in a real app, this would come from your database
+// --- Zod Schema ---
+const pricingSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  price: z.string().refine((val) => !isNaN(parseFloat(val)), {
+    message: "Price must be a number",
+  }),
+  unit: z.enum(["hour", "session", "month"]),
+  description: z.string().optional(),
+  isRecommended: z.boolean().optional(),
+  features: z.array(z.string()),
+});
+
+type PricingFormValues = z.infer<typeof pricingSchema>;
+
 const initialPricingPlans = [
   {
     id: "1",
@@ -52,200 +74,214 @@ export function PricingForm({ id }: PricingFormProps) {
   const router = useRouter();
   const [newFeature, setNewFeature] = useState("");
 
-  const [formData, setFormData] = useState({
-    name: "",
-    price: "",
-    unit: "hour",
-    description: "",
-    isRecommended: false,
-    features: [] as string[],
+  const form = useForm<PricingFormValues>({
+    resolver: zodResolver(pricingSchema),
+    defaultValues: {
+      name: "",
+      price: "",
+      unit: "hour",
+      description: "",
+      isRecommended: false,
+      features: [],
+    },
   });
+
+  const {
+    handleSubmit,
+    setValue,
+    getValues,
+    control,
+    reset,
+    watch,
+    formState: { isSubmitting },
+  } = form;
 
   useEffect(() => {
     if (id) {
       const plan = initialPricingPlans.find((plan) => plan.id === id);
       if (plan) {
-        setFormData({
+        reset({
           name: plan.name,
           price: plan.price.toString(),
-          unit: plan.unit,
+          unit: plan.unit as "hour" | "session" | "month",
           description: plan.description,
           isRecommended: plan.isRecommended,
-          features: [...plan.features],
+          features: plan.features,
         });
       }
     }
-  }, [id]);
-
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSwitchChange = (checked: boolean) => {
-    setFormData((prev) => ({ ...prev, isRecommended: checked }));
-  };
+  }, [id, reset]);
 
   const addFeature = () => {
-    if (newFeature.trim()) {
-      setFormData((prev) => ({
-        ...prev,
-        features: [...prev.features, newFeature.trim()],
-      }));
+    const trimmed = newFeature.trim();
+    if (trimmed) {
+      setValue("features", [...getValues("features"), trimmed]);
       setNewFeature("");
     }
   };
 
   const removeFeature = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      features: prev.features.filter((_, i) => i !== index),
-    }));
+    const updated = [...getValues("features")];
+    updated.splice(index, 1);
+    setValue("features", updated);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // In a real app, you would save to your database here
-    console.log("Saving pricing plan:", formData);
-
-    // Navigate back to the pricing dashboard
-    router.push("/dashboard/pricing");
+  const onSubmit = (data: PricingFormValues) => {
+    console.log("Saving pricing plan:", data);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="name">Plan Name</Label>
-            <Input
-              id="name"
+    <Form {...form}>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <FormField
+              control={control}
               name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Plan Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="price">Price (€)</Label>
-              <Input
-                id="price"
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={control}
                 name="price"
-                type="number"
-                min="0"
-                step="0.01"
-                value={formData.price}
-                onChange={handleChange}
-                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price (€)</FormLabel>
+                    <FormControl>
+                      <Input type="number" min="0" step="0.01" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={control}
+                name="unit"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Unit</FormLabel>
+                    <FormControl>
+                      <select
+                        {...field}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      >
+                        <option value="hour">Per Hour</option>
+                        <option value="session">Per Session</option>
+                        <option value="month">Per Month</option>
+                      </select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
 
-            <div>
-              <Label htmlFor="unit">Unit</Label>
-              <select
-                id="unit"
-                name="unit"
-                value={formData.unit}
-                onChange={handleChange}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <option value="hour">Per Hour</option>
-                <option value="session">Per Session</option>
-                <option value="month">Per Month</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
+            <FormField
+              control={control}
               name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows={3}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea rows={3} {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={control}
+              name="isRecommended"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="mb-0">Mark as Recommended</FormLabel>
+                </FormItem>
+              )}
             />
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="isRecommended"
-              checked={formData.isRecommended}
-              onCheckedChange={handleSwitchChange}
-            />
-            <Label htmlFor="isRecommended">Mark as Recommended</Label>
-          </div>
-        </div>
+          {/* Features */}
+          <div>
+            <FormLabel>Features</FormLabel>
+            <Card className="mt-2">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-2 mb-4">
+                  <Input
+                    placeholder="Add a feature..."
+                    value={newFeature}
+                    onChange={(e) => setNewFeature(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addFeature();
+                      }
+                    }}
+                  />
+                  <Button type="button" size="sm" onClick={addFeature}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
 
-        <div>
-          <Label>Features</Label>
-          <Card className="mt-2">
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2 mb-4">
-                <Input
-                  placeholder="Add a feature..."
-                  value={newFeature}
-                  onChange={(e) => setNewFeature(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addFeature();
-                    }
-                  }}
-                />
-                <Button type="button" size="sm" onClick={addFeature}>
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-
-              <ul className="space-y-2">
-                {formData.features.map((feature, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center justify-between bg-muted p-2 rounded-md"
-                  >
-                    <div className="flex items-center">
-                      <Check className="h-4 w-4 text-green-500 mr-2" />
-                      <span>{feature}</span>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeFeature(index)}
+                <ul className="space-y-2">
+                  {watch("features").map((feature, index) => (
+                    <li
+                      key={index}
+                      className="flex items-center justify-between bg-muted p-2 rounded-md"
                     >
-                      <X className="h-4 w-4 text-red-500" />
-                    </Button>
-                  </li>
-                ))}
-                {formData.features.length === 0 && (
-                  <li className="text-muted-foreground text-center py-2">
-                    No features added yet
-                  </li>
-                )}
-              </ul>
-            </CardContent>
-          </Card>
+                      <div className="flex items-center">
+                        <Check className="h-4 w-4 text-green-500 mr-2" />
+                        <span>{feature}</span>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeFeature(index)}
+                      >
+                        <X className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </li>
+                  ))}
+                  {watch("features").length === 0 && (
+                    <li className="text-muted-foreground text-center py-2">
+                      No features added yet
+                    </li>
+                  )}
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </div>
 
-      <div className="flex justify-end space-x-4 pt-5">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.push("/dashboard/pricing")}
-        >
-          Cancel
-        </Button>
-        <Button type="submit">{id ? "Update Plan" : "Create Plan"}</Button>
-      </div>
-    </form>
+        <div className="flex justify-end space-x-4 pt-5">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push("/dashboard/pricing")}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {id ? "Update Plan" : "Create Plan"}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }
