@@ -95,3 +95,15 @@ export const freeTrialSchema = z.object({
 });
 
 export type FreeTrialSchemaType = z.infer<typeof freeTrialSchema>;
+
+export const pricingSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  price: z.string().refine((val) => !isNaN(parseFloat(val)), {
+    message: "Price must be a number",
+  }),
+  description: z.string(),
+  isRecommended: z.boolean().optional(),
+  features: z.array(z.string()),
+});
+
+export type PricingFormValues = z.infer<typeof pricingSchema>;

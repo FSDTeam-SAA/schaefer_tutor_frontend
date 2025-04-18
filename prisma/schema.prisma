@@ -24,12 +24,15 @@ model User {
   sessions      Session[]
   Authenticator Authenticator[]
 
+  pricingId String?  @db.ObjectId
+
   subjects String[]
 
   // Relations for lessons
   teacherLessons Lesson[] @relation(name: "TeacherLessons")
   studentLessons Lesson[] @relation(name: "StudentLessons")
   reviews        Review[]
+  pricing Pricing? @relation(fields: [pricingId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -223,4 +226,27 @@ model ParticipantJoin {
   joinedAt         DateTime @default(now())
 
   recommendation Recommendation @relation(fields: [recommendationId], references: [id])
+}
+
+enum Unit {
+  hour
+  month
+  session
+}
+
+model Pricing {
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  price Int
+  unit Unit @default(hour)
+  description String
+  isRecommended Boolean @default(false)
+  features String[]
+
+  // Add the opposite relation field
+  users User[]
+
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
 }

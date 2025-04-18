@@ -2,12 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 
 import { Check, Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 
+import { createPricing } from "@/action/pricing";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -21,20 +21,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { PricingFormValues, pricingSchema } from "@/schemas/schema";
+import { Pricing } from "@prisma/client";
+import { toast } from "sonner";
 
 // --- Zod Schema ---
-const pricingSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  price: z.string().refine((val) => !isNaN(parseFloat(val)), {
-    message: "Price must be a number",
-  }),
-  unit: z.enum(["hour", "session", "month"]),
-  description: z.string().optional(),
-  isRecommended: z.boolean().optional(),
-  features: z.array(z.string()),
-});
-
-type PricingFormValues = z.infer<typeof pricingSchema>;
 
 const initialPricingPlans = [
   {
@@ -68,33 +59,26 @@ const initialPricingPlans = [
 
 interface PricingFormProps {
   id?: string;
+  initialvalue?: Pricing;
 }
 
-export function PricingForm({ id }: PricingFormProps) {
+export function PricingForm({ id, initialvalue }: PricingFormProps) {
   const router = useRouter();
   const [newFeature, setNewFeature] = useState("");
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<PricingFormValues>({
     resolver: zodResolver(pricingSchema),
     defaultValues: {
       name: "",
       price: "",
-      unit: "hour",
       description: "",
       isRecommended: false,
       features: [],
     },
   });
 
-  const {
-    handleSubmit,
-    setValue,
-    getValues,
-    control,
-    reset,
-    watch,
-    formState: { isSubmitting },
-  } = form;
+  const { handleSubmit, setValue, getValues, control, reset, watch } = form;
 
   useEffect(() => {
     if (id) {
@@ -103,7 +87,6 @@ export function PricingForm({ id }: PricingFormProps) {
         reset({
           name: plan.name,
           price: plan.price.toString(),
-          unit: plan.unit as "hour" | "session" | "month",
           description: plan.description,
           isRecommended: plan.isRecommended,
           features: plan.features,
@@ -127,7 +110,20 @@ export function PricingForm({ id }: PricingFormProps) {
   };
 
   const onSubmit = (data: PricingFormValues) => {
-    console.log("Saving pricing plan:", data);
+    if (initialvalue) {
+    } else {
+      startTransition(() => {
+        createPricing(data).then((res) => {
+          if (!res.success) {
+            toast.error(res.message);
+          }
+
+          // handle success
+          toast.success(res.message);
+          form.reset();
+        });
+      });
+    }
   };
 
   return (
@@ -158,27 +154,6 @@ export function PricingForm({ id }: PricingFormProps) {
                     <FormLabel>Price (€)</FormLabel>
                     <FormControl>
                       <Input type="number" min="0" step="0.01" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="unit"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Unit</FormLabel>
-                    <FormControl>
-                      <select
-                        {...field}
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      >
-                        <option value="hour">Per Hour</option>
-                        <option value="session">Per Session</option>
-                        <option value="month">Per Month</option>
-                      </select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -277,7 +252,7 @@ export function PricingForm({ id }: PricingFormProps) {
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isPending}>
             {id ? "Update Plan" : "Create Plan"}
           </Button>
         </div>
