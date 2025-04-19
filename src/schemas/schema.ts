@@ -107,3 +107,53 @@ export const pricingSchema = z.object({
 });
 
 export type PricingFormValues = z.infer<typeof pricingSchema>;
+
+const currentYear = new Date().getFullYear() % 100; // Get last 2 digits of the current year
+const currentMonth = new Date().getMonth() + 1;
+
+export const paymentCardSchema = z
+  .object({
+    cardholderName: z
+      .string()
+      .min(2, { message: "Cardholder name is required" })
+      .regex(/^[a-zA-Z\s]+$/, {
+        message: "Cardholder name must contain only letters and spaces",
+      }),
+
+    cardNumber: z
+      .string()
+      .regex(/^\d{16}$/, { message: "Card number must be 16 digits" }),
+
+    expiryMonth: z
+      .string()
+      .regex(/^(0?[1-9]|1[0-2])$/, { message: "Invalid expiry month" }),
+
+    expiryYear: z
+      .string()
+      .regex(/^\d{2}$/, { message: "Invalid expiry year format" })
+      .refine((year) => parseInt(year) >= currentYear, {
+        message: "Card is expired",
+      }),
+
+    cvc: z
+      .string()
+      .regex(/^\d{3,4}$/, { message: "CVC must be 3 or 4 digits" }),
+  })
+  .refine(
+    (data) => {
+      // Check if the expiry date is in the future
+      const expYear = parseInt(data.expiryYear);
+      const expMonth = parseInt(data.expiryMonth);
+
+      if (expYear === currentYear) {
+        return expMonth >= currentMonth;
+      }
+      return true;
+    },
+    {
+      message: "Card is expired",
+      path: ["expiryMonth"],
+    }
+  );
+
+export type PaymentCardSchemaType = z.infer<typeof paymentCardSchema>;

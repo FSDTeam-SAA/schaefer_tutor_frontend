@@ -28,6 +28,8 @@ model User {
 
   subjects String[]
 
+  cards CardInfos[]
+
   // Relations for lessons
   teacherLessons Lesson[] @relation(name: "TeacherLessons")
   studentLessons Lesson[] @relation(name: "StudentLessons")
@@ -249,4 +251,20 @@ model Pricing {
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
 
+}
+
+model CardInfos {
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  cardholderName String
+  cardNumber String 
+  expiryMonth String 
+  expiryYear String
+  cvc String
+
+  userId String @db.ObjectId
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 }

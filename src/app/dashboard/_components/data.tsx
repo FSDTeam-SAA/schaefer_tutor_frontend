@@ -7,6 +7,7 @@ import {
   GitPullRequestDraft,
   HomeIcon,
   User,
+  Wallet,
   Waypoints,
 } from "lucide-react";
 import { ReactNode } from "react";
@@ -49,6 +50,13 @@ export const studentDashboardTabLists = [
     path: "/dashboard/student/refferal",
     icon: <Waypoints className="h-4 w-4" />,
     linkText: "Refferal",
+    roles: ["student"],
+  },
+  {
+    id: generateRandomId(),
+    path: "/dashboard/student/payment",
+    icon: <Wallet className="h-4 w-4" />,
+    linkText: "Payment",
     roles: ["student"],
   },
 ] as Tab[];
