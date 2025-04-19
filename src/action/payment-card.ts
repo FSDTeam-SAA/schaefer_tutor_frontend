@@ -2,67 +2,103 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { paymentCardSchema, PaymentCardSchemaType } from "@/schemas/schema";
+import { stripe } from "@/lib/stripe";
+import { revalidatePath } from "next/cache";
 
-export async function createCardAction(data: PaymentCardSchemaType) {
-  const session = await auth();
+export async function savePaymentMethod(pmid: string) {
+  const cu = await auth();
 
-  // Check if the user is authenticated
-  if (!session?.user?.id) {
+  if (!cu?.user.id) {
     return {
       success: false,
-      message: "You must be logged in to add a payment card.",
-    };
-  }
-
-  // Validate the input data using the schema
-  const parsedValue = paymentCardSchema.safeParse(data);
-
-  if (!parsedValue.success) {
-    return {
-      success: false,
-      message:
-        "Invalid card details. Please check the information and try again.",
-    };
-  }
-
-  // Check if the card already exists in the database
-  const isExists = await prisma.cardInfos.findFirst({
-    where: {
-      cardNumber: parsedValue.data.cardNumber,
-    },
-  });
-
-  if (isExists) {
-    return {
-      success: false,
-      message: "This card has already been added to your account.",
+      message: "You must be logged in to save a payment method.",
     };
   }
 
   try {
-    // Create the card entry in the database
-    await prisma.cardInfos.create({
+    await prisma.user.update({
+      where: {
+        id: cu.user.id,
+      },
       data: {
-        cardholderName: parsedValue.data.cardholderName,
-        cardNumber: parsedValue.data.cardNumber,
-        expiryMonth: parsedValue.data.expiryMonth,
-        expiryYear: parsedValue.data.expiryYear,
-        cvc: parsedValue.data.cvc,
-        userId: session.user.id,
+        stripePaymentMethodId: pmid,
       },
     });
 
+    revalidatePath("/dashboard/student/payment");
+
     return {
       success: true,
-      message: "Your payment card has been successfully added.",
+      message: "Your card has been saved successfully.",
     };
   } catch (error) {
-    console.error("Error while adding the card:", error);
+    console.error("Failed to save payment method:", error);
     return {
       success: false,
       message:
-        "An unexpected error occurred while adding the card. Please try again later.",
+        "Something went wrong while saving your payment method. Please try again.",
+    };
+  }
+}
+
+export async function removePaymentMethod() {
+  const cu = await auth();
+
+  if (!cu?.user.id) {
+    return {
+      success: false,
+      message: "You must be logged in to remove a payment method.",
+    };
+  }
+
+  const user = await prisma.user.findFirst({
+    where: {
+      id: cu.user.id,
+    },
+    select: {
+      stripeCustomerId: true,
+      stripePaymentMethodId: true,
+    },
+  });
+
+  if (!user?.stripePaymentMethodId) {
+    return {
+      success: false,
+      message: "No payment method found to remove.",
+    };
+  }
+
+  if (!user.stripeCustomerId) {
+    return {
+      success: false,
+      message: "No Stripe customer associated with this account.",
+    };
+  }
+
+  try {
+    await stripe.paymentMethods.detach(user.stripePaymentMethodId);
+
+    await stripe.customers.del(user.stripeCustomerId);
+
+    await prisma.user.update({
+      where: { id: cu.user.id },
+      data: {
+        stripeCustomerId: null,
+        stripePaymentMethodId: null,
+      },
+    });
+
+    revalidatePath("/dashboard/student/payment");
+
+    return {
+      success: true,
+      message: "Stripe customer and related data removed successfully.",
+    };
+  } catch (error) {
+    console.error("Error removing Stripe customer:", error);
+    return {
+      success: false,
+      message: "Something went wrong while removing the customer from Stripe.",
     };
   }
 }

@@ -25,6 +25,8 @@ model User {
   Authenticator Authenticator[]
 
   pricingId String?  @db.ObjectId
+  stripeCustomerId String?
+  stripePaymentMethodId String?
 
   subjects String[]
 
