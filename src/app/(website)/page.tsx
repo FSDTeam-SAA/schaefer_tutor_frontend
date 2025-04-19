@@ -13,14 +13,17 @@ const NachhilfeLandingPage = async () => {
 
   const cs = await auth();
 
+  let user;
+
   if (cs?.user) {
-    const user = await prisma.user.findFirst({
+    user = await prisma.user.findFirst({
       where: {
         id: cs.user.id,
       },
       select: {
         isGreeting: true,
         id: true,
+        pricingId: true,
       },
     });
 
@@ -45,7 +48,11 @@ const NachhilfeLandingPage = async () => {
       <Subjects />
 
       {/* Pricing */}
-      <PricingSection data={pricing} />
+      <PricingSection
+        data={pricing}
+        isLoggedIn={!!cs}
+        purchasedPlan={user?.pricingId as string}
+      />
 
       {/* Contact Form */}
       <div className="w-full bg-white py-20">

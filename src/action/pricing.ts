@@ -135,3 +135,45 @@ export async function PlanDeleteAction(id: string) {
     };
   }
 }
+
+export async function buyPricing(planId: string) {
+  const cu = await auth();
+
+  if (!cu?.user.id) {
+    return {
+      success: false,
+      message: "Unauthorized access",
+    };
+  }
+
+  if (cu.user.role !== "student") {
+    return {
+      success: false,
+      message: "Teacher don't have access to buy plan",
+    };
+  }
+
+  try {
+    await prisma.user.update({
+      where: {
+        id: cu.user.id,
+      },
+      data: {
+        pricingId: planId,
+      },
+    });
+
+    revalidatePath("/");
+
+    return {
+      success: true,
+      message: "Saved Your purchased plan",
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+}

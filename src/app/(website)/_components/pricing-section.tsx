@@ -3,9 +3,11 @@ import { PricingCard } from "./pricing-card";
 
 interface Props {
   data: Pricing[];
+  isLoggedIn: boolean;
+  purchasedPlan: string;
 }
 
-export function PricingSection({ data }: Props) {
+export function PricingSection({ data, isLoggedIn, purchasedPlan }: Props) {
   if (data.length === 0) return;
 
   return (
@@ -22,6 +24,9 @@ export function PricingSection({ data }: Props) {
               description={plan.description}
               features={plan.features}
               recommended={plan.isRecommended}
+              isLoggedIn={isLoggedIn}
+              planId={plan.id}
+              alreadyPurchased={purchasedPlan}
             />
           ))}
         </div>

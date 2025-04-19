@@ -11,17 +11,18 @@ import {
 } from "@/components/ui/card";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { Loader2, Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 
-const CardInfoContainer = () => {
+interface Props {
+  onSuccess: () => void;
+}
+
+const CardInfoContainer = ({ onSuccess }: Props) => {
   const stripe = useStripe();
   const elements = useElements();
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-
-  const router = useRouter();
 
   // Get SetupIntent client_secret on mount
   useEffect(() => {
@@ -62,7 +63,7 @@ const CardInfoContainer = () => {
 
           // handle success
           toast.success(res.message);
-          router.back();
+          onSuccess();
         });
       }
     });

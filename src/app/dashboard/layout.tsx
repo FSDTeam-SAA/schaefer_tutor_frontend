@@ -1,6 +1,5 @@
 import { auth } from "@/auth";
 import DashboardNav from "@/components/local/dashboard-nav";
-import StripeElementsWrapper from "@/provider/element-wrapper";
 import { redirect } from "next/navigation";
 import { ReactNode } from "react";
 
@@ -12,7 +11,7 @@ const DashboardLayout = async ({ children }: { children: ReactNode }) => {
   return (
     <div>
       <DashboardNav />
-      <StripeElementsWrapper>{children}</StripeElementsWrapper>
+      {children}
     </div>
   );
 };
