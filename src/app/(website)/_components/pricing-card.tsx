@@ -1,3 +1,6 @@
+"use client";
+import { buyPricing } from "@/action/pricing";
+import CardInfoContainer from "@/app/dashboard/student/payment/_components/cards/card-info-container";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -5,22 +8,24 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
-
-interface PricingFeature {
-  text: string;
-  highlight?: string;
-}
+import { useRouter } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
 
 interface PricingCardProps {
   title: string;
   price: string;
   perHour?: boolean;
-  description?: string;
-  features: PricingFeature[];
-  recommended?: boolean;
+  description: string;
+  features: string[];
+  recommended: boolean;
   className?: string;
+  planId: string;
+  isLoggedIn: boolean;
+  alreadyPurchased: string;
 }
 
 export function PricingCard({
@@ -31,7 +36,46 @@ export function PricingCard({
   features,
   recommended = false,
   className,
+  isLoggedIn,
+  planId,
+  alreadyPurchased,
 }: PricingCardProps) {
+  const [open, setOpen] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  useEffect(() => {
+    return () => {
+      setRedirecting(false);
+    };
+  }, []);
+
+  const onBuy = () => {
+    if (!isLoggedIn) {
+      setRedirecting(true);
+      router.push("/login");
+      return;
+    }
+
+    // handle success
+    startTransition(() => {
+      buyPricing(planId).then((res) => {
+        if (!res.success) {
+          toast.error(res.message);
+          return;
+        }
+
+        toast.success(res.message);
+        setOpen(false);
+      });
+    });
+  };
+
+  const isLoading = redirecting || isPending;
+
+  const isAlreadyPurchased = planId == alreadyPurchased;
+
   return (
     <Card
       className={cn(
@@ -66,14 +110,7 @@ export function PricingCard({
               <li key={index} className="flex items-start">
                 <Check className="h-5 w-5 text-green-500 shrink-0 mr-2" />
                 <span>
-                  {feature.highlight ? (
-                    <>
-                      <span className="font-medium">{feature.highlight}</span>
-                      {feature.text}
-                    </>
-                  ) : (
-                    feature.text
-                  )}
+                  <span className="font-medium">{feature}</span>
                 </span>
               </li>
             ))}
@@ -81,7 +118,34 @@ export function PricingCard({
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full ">Book now</Button>
+        <Dialog open={open} onOpenChange={setOpen}>
+          {isLoggedIn ? (
+            <>
+              <DialogTrigger asChild>
+                <Button
+                  className="w-full"
+                  disabled={
+                    isLoading || isAlreadyPurchased || !!alreadyPurchased
+                  }
+                  variant={isAlreadyPurchased ? "outline" : "default"}
+                >
+                  {isAlreadyPurchased ? "Already Booked" : "Book now"}
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <CardInfoContainer onSuccess={onBuy} />
+              </DialogContent>
+            </>
+          ) : (
+            <Button
+              className="w-full"
+              onClick={() => router.push("/login")}
+              disabled={isLoading}
+            >
+              Login to Book
+            </Button>
+          )}
+        </Dialog>
       </CardFooter>
     </Card>
   );

@@ -1,6 +1,7 @@
 import NProgress from "@/components/providers/NProgress";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 import AppProvider from "@/provider/AppProvider";
+import StripeElementsWrapper from "@/provider/element-wrapper";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Toaster } from "sonner";
@@ -34,7 +35,9 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <EdgeStoreProvider>
-          <AppProvider>{children}</AppProvider>
+          <AppProvider>
+            <StripeElementsWrapper>{children}</StripeElementsWrapper>
+          </AppProvider>
         </EdgeStoreProvider>
         <Toaster richColors closeButton />
         <NProgress />

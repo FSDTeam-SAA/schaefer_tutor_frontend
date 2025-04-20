@@ -15,6 +15,15 @@ const Page = async () => {
   const students = await prisma.user.findMany({
     where: {
       role: "student",
+      pricingId: {
+        not: null,
+      },
+      stripePaymentMethodId: {
+        not: null,
+      },
+      stripeCustomerId: {
+        not: null,
+      },
     },
   });
 

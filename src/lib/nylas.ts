@@ -7,7 +7,7 @@ export const nylas = new Nylas({
 
 export const nylasConfig = {
   clientId: process.env.NYLAS_CLIENT_ID!,
-  redirectUri: process.env.NEXTAUTH_URL! + "/api/oauth/exchange",
+  redirectUri: process.env.AUTH_URL! + "/api/oauth/exchange",
   apiKey: process.env.NYLAS_API_KEY!,
   apiUri: process.env.NYLAS_API_URI!,
 };
