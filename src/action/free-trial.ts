@@ -95,7 +95,7 @@ export const OnAcceptFreeTrialReq = async ({
     });
 
     // send email to the student
-    const data = await resend.emails.send({
+    await resend.emails.send({
       from: "Schaefer Tutor <support@schaefer-tutoring.com>",
       to: [updatedRequest.studentEmail],
       subject: "Your Free Trial Session with Schaefer Tutor",
@@ -105,11 +105,9 @@ export const OnAcceptFreeTrialReq = async ({
         sessionDate: moment(date).format("D MMMM, YYYY"),
         sessionTime: time,
         sessionSubject: updatedRequest.subject,
-        confirmationLink: `${process.env.NEXTAUTH_URL}/api/confirm/free-trial-req?reqId=${updatedRequest.id}`,
+        confirmationLink: `${process.env.AUTH_URL}/api/confirm/free-trial-req?reqId=${updatedRequest.id}`,
       }),
     });
-
-    console.log(data);
 
     revalidatePath("/dashboard/teacher/free-trial-requests");
 
