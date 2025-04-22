@@ -124,3 +124,29 @@ export const OnAcceptFreeTrialReq = async ({
     };
   }
 };
+
+export async function onCompletedFreeTrialRequest(reqid: string) {
+  try {
+    await prisma.freeTrialReq.update({
+      where: {
+        id: reqid,
+      },
+      data: {
+        status: "completed",
+      },
+    });
+
+    revalidatePath("/dashboard/teacher/free-trial-requests");
+
+    return {
+      success: true,
+      message: "Trial Request Completed successfully",
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message ?? "Something went wrong",
+    };
+  }
+}

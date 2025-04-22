@@ -1,7 +1,9 @@
 "use client";
 
+import { Account } from "@/types/account";
+
 interface Props {
-  data: any;
+  data: Account[];
 }
 
 const PaymentManagementTable = ({ data }: Props) => {

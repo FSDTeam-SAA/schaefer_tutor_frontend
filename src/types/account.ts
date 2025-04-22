@@ -5,4 +5,3 @@ export interface Account {
   lessons: number;
   student: User;
 }
-[];

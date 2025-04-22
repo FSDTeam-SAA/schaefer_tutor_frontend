@@ -1,19 +1,15 @@
-import { DataTable } from "@/components/ui/data-table";
 import { prisma } from "@/lib/prisma";
 import { Account } from "@/types/account";
 import { Lesson, User } from "@prisma/client";
-import {
-  ColumnDef,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
 import PaymentManagementTable from "./_components/Payment-management-table";
 
 // Transform raw MongoDB response into TypeScript-compatible format
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function transformToAccounts(rawData: any[]): Account[] {
   return rawData.map((item) => {
     const studentId = item.studentId.$oid; // Extract student ID
     const lessons = item.lessons.map(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (lesson: any): Lesson => ({
         id: lesson._id.$oid,
         teacherId: lesson.teacherId.$oid,
@@ -60,12 +56,13 @@ function transformToAccounts(rawData: any[]): Account[] {
 
 const Page = async () => {
   // Get the current date
-  const now = new Date();
+  // const now = new Date();
 
   // Calculate the start and end of the last month
-  const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1); // First day of last month
-  const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+  // const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1); // First day of last month
+  // const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const groupedLessons: { cursor?: { firstBatch?: any[] } } =
     await prisma.$runCommandRaw({
       aggregate: "Lesson", // Name of the collection
@@ -120,17 +117,3 @@ const Page = async () => {
 };
 
 export default Page;
-
-interface TableContainerProps {
-  data: Account[];
-  columns: ColumnDef<Account>[];
-}
-
-const TableContainer = ({ data, columns }: TableContainerProps) => {
-  const table = useReactTable({
-    data: data,
-    columns: columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
-  return <DataTable table={table} columns={columns} />;
-};
