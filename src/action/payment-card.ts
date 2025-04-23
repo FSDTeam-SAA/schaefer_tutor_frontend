@@ -146,13 +146,19 @@ export async function saveSepaPayment() {
     }
 
     // Step 4: Create a Stripe Checkout session for payment method setup
+    console.log({ user: user.id });
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card", "sepa_debit"],
       mode: "setup",
       customer: customerId,
       success_url: "https://example.com/success",
       cancel_url: "https://example.com/cancel",
+      metadata: {
+        userId: user.id,
+      },
     });
+
+    console.log({ metadata: session.metadata });
 
     // Step 5: Return the session URL to the client
     return {
