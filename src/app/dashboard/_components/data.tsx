@@ -86,7 +86,7 @@ export const teacherDashboardTabLists = [
     id: generateRandomId(),
     path: "/dashboard/teacher/free-trial-requests",
     icon: <GitPullRequestDraft className="h-4 w-4" />,
-    linkText: "Free Trial Requests",
+    linkText: "Trial Requests",
     roles: ["teacher"],
   },
 ] as Tab[];

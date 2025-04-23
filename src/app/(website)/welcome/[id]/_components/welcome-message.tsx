@@ -104,9 +104,6 @@ export default function WelcomeMessage({
                   Connect Calendar
                 </Link>
               </Button>
-              <Button variant="outline" className="w-full sm:w-auto">
-                Complete Your Profile
-              </Button>
             </CardFooter>
           </TabsContent>
 
@@ -165,10 +162,14 @@ export default function WelcomeMessage({
               </div>
             </CardContent>
             <CardFooter className="flex flex-col sm:flex-row gap-3">
-              <Button variant="outline" className="w-full sm:w-auto" asChild>
-                <Link href="/dashboard/student/profile" className="w-full">
-                  Complete Your Profile
-                </Link>
+              <Button
+                variant="outline"
+                className="w-full sm:w-auto"
+                onClick={() => {
+                  window.location.href = "/dashboard/student/profile";
+                }}
+              >
+                Complete Your Profile
               </Button>
             </CardFooter>
           </TabsContent>

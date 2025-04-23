@@ -14,7 +14,6 @@ interface Props {
 }
 
 const PaymentManagementTable = ({ data }: Props) => {
-  console.log(data);
   return (
     <div>
       <TableContainer data={data} columns={PaymentColumns} />

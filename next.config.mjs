@@ -8,12 +8,16 @@ const nextConfig = {
       },
       {
         hostname: "files.edgestore.dev",
-        protocol: "https"
+        protocol: "https",
       },
       {
         hostname: "api.qrserver.com",
-        protocol: "https"
-      }
+        protocol: "https",
+      },
+      {
+        hostname: "res-console.cloudinary.com",
+        protocol: "https",
+      },
     ],
   },
 };
