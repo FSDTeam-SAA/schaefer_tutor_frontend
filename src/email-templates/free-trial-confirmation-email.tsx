@@ -41,8 +41,8 @@ export const FreeTrialConfirmationEmail = ({
           <Section style={section}>
             <Text style={paragraph}>Hey {studentName},</Text>
             <Text style={paragraph}>
-              Great news! Your free trial request has been accepted by{" "}
-              {teacherName}.
+              Thank you for your patience . We have found the perfect teacher
+              for you.
             </Text>
 
             <Section style={detailsContainer}>
@@ -55,6 +55,9 @@ export const FreeTrialConfirmationEmail = ({
               </Text>
               <Text style={detailItem}>
                 <strong>Subject:</strong> {sessionSubject}
+              </Text>
+              <Text style={detailItem}>
+                <strong>Teacher:</strong> {teacherName}
               </Text>
             </Section>
 

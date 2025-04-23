@@ -1,7 +1,7 @@
-import { User } from "@prisma/client";
+import { Lesson, User } from "@prisma/client";
 
-export interface Account {
+export type Account = {
   studentId: string;
-  lessons: number;
+  lessons: Lesson[];
   student: User;
-}
+};

@@ -59,7 +59,7 @@ const Page = async () => {
   // const now = new Date();
 
   // Calculate the start and end of the last month
-  // const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1); // First day of last month
+  // const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   // const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

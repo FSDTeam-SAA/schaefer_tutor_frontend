@@ -97,10 +97,10 @@ const Page = async () => {
       <div>
         <div>
           <h2 className="text-tourHub-title2 text-[30px] font-bold font-inter">
-            Free Trial Requests
+            Trial Requests
           </h2>
           <p className="text-tourHub-green-dark text-base mb-1">
-            Manage your free trial requests
+            Manage your trial requests
           </p>
         </div>
         <FreeTrialRequestTableContainer
@@ -114,7 +114,7 @@ const Page = async () => {
             Confirmed Trial Request
           </h2>
           <p className="text-tourHub-green-dark text-base mb-1">
-            The student confirmed the free trial request
+            The student confirmed the trial request
           </p>
         </div>
         <FreeTrialRequestTableContainer

@@ -102,3 +102,71 @@ export async function removePaymentMethod() {
     };
   }
 }
+
+export async function saveSepaPayment() {
+  try {
+    // Step 1: Authenticate the user
+    const cu = await auth();
+
+    if (!cu?.user?.id) {
+      return {
+        success: false,
+        message: "User authentication failed",
+      };
+    }
+
+    // Step 2: Fetch the user from the database
+    const user = await prisma.user.findFirst({
+      where: { id: cu.user.id },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    // Step 3: Ensure the user has a Stripe customer ID
+    let customerId = user.stripeCustomerId;
+    if (!customerId) {
+      // Create a new Stripe customer if one doesn't exist
+      const customer = await stripe.customers.create({
+        email: user.email || undefined,
+        metadata: { userId: cu.user.id },
+      });
+
+      customerId = customer.id;
+
+      // Update the user record with the Stripe customer ID
+      await prisma.user.update({
+        where: { id: cu.user.id },
+        data: { stripeCustomerId: customerId },
+      });
+    }
+
+    // Step 4: Create a Stripe Checkout session for payment method setup
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card", "sepa_debit"],
+      mode: "setup",
+      customer: customerId,
+      success_url: "https://example.com/success",
+      cancel_url: "https://example.com/cancel",
+    });
+
+    // Step 5: Return the session URL to the client
+    return {
+      success: true,
+      message: "Checkout session created successfully",
+      sessionUrl: session.url,
+    };
+  } catch (error) {
+    console.error("Error saving SEPA payment:", error);
+
+    // Return a generic error message to the client
+    return {
+      success: false,
+      message: "An error occurred while processing your request",
+    };
+  }
+}
