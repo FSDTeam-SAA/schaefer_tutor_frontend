@@ -24,18 +24,17 @@ model User {
   sessions      Session[]
   Authenticator Authenticator[]
 
-  pricingId String?  @db.ObjectId
-  stripeCustomerId String?
+  pricingId             String? @db.ObjectId
+  stripeCustomerId      String?
   stripePaymentMethodId String?
 
   subjects String[]
-
 
   // Relations for lessons
   teacherLessons Lesson[] @relation(name: "TeacherLessons")
   studentLessons Lesson[] @relation(name: "StudentLessons")
   reviews        Review[]
-  pricing Pricing? @relation(fields: [pricingId], references: [id])
+  pricing        Pricing? @relation(fields: [pricingId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -207,25 +206,24 @@ model preferredSlots {
 }
 
 model Recommendation {
-  id           String          @id @default(auto()) @map("_id") @db.ObjectId
-  creator      String          @db.ObjectId
-  slug         String          @unique
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  creator String @db.ObjectId
+  slug    String @unique
 
   // Participants with join timestamps
   participants ParticipantJoin[]
 
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // Embedded model to track participant join times
 model ParticipantJoin {
-   id           String          @id @default(auto()) @map("_id") @db.ObjectId
-   
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
   recommendationId String   @db.ObjectId
   participantId    String   @db.ObjectId
-  slugId String
+  slugId           String
   joinedAt         DateTime @default(now())
 
   recommendation Recommendation @relation(fields: [recommendationId], references: [id])
@@ -238,20 +236,28 @@ enum Unit {
 }
 
 model Pricing {
-  id           String          @id @default(auto()) @map("_id") @db.ObjectId
-  name String
-  price Int
-  unit Unit @default(hour)
-  description String
-  isRecommended Boolean @default(false)
-  features String[]
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  price         Int
+  unit          Unit     @default(hour)
+  description   String
+  isRecommended Boolean  @default(false)
+  features      String[]
 
   // Add the opposite relation field
   users User[]
 
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
+model DiscountRules {
+  id                   String @id @default(auto()) @map("_id") @db.ObjectId
+  creator              String @db.ObjectId
+  minimumLesson        Int
+  minimumRecomendation Int
+  discount             Int
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

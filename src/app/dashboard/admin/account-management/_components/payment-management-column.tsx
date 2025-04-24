@@ -3,6 +3,7 @@ import {
   getAllRecomendationByStudentId,
   getSubscriptionById,
 } from "@/data/user";
+import { calculateDiscount } from "@/lib/payment";
 import { Account } from "@/types/account";
 import { ColumnDef } from "@tanstack/react-table";
 import { toast } from "sonner";
@@ -84,6 +85,13 @@ export const PaymentColumns: ColumnDef<Account>[] = [
       const reco = await getAllRecomendationByStudentId(studentId);
 
       return <div>{reco}</div>;
+    },
+  },
+  {
+    header: "Discount",
+    cell: async ({ row }) => {
+      const discount = await calculateDiscount(row.original);
+      return <p className="text-muted-foreground">${discount}</p>;
     },
   },
   {
