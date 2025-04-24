@@ -79,11 +79,22 @@ function transformToAccounts(rawData: any[]): Account[] {
 
 const Page = async () => {
   // Get the current date
-  // const now = new Date();
+  const now = new Date();
 
   // Calculate the start and end of the last month
-  // const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  // const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+  const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+
+  const payments = await prisma.paymentHistory.findMany({
+    where: {
+      paymentForDate: {
+        gte: lastMonthStart,
+        lte: lastMonthEnd,
+      },
+    },
+  });
+
+  const arrayOfStudentId = payments.map((item) => item.studentId);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const groupedLessons: { cursor?: { firstBatch?: any[] } } =
@@ -93,6 +104,13 @@ const Page = async () => {
         {
           $match: {
             status: "carried_out", // Filter only completed lessons
+            date: {
+              $gte: lastMonthStart,
+              $lte: lastMonthEnd,
+            },
+            studentId: {
+              $nin: arrayOfStudentId,
+            },
           },
         },
         {
