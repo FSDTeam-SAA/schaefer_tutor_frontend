@@ -49,7 +49,9 @@ export const PaymentColumns: ColumnDef<Account>[] = [
     header: "Amount",
     cell: async ({ row }) => {
       const totalLesson = row.original.lessons.length;
-      const subscription = row.original.student.pricing;
+
+      const subscriptionId = row.original.student.pricingId;
+      const subscription = await getSubscriptionById(subscriptionId as string);
 
       if (!subscription) {
         toast.error("Subscription not found on payment column");

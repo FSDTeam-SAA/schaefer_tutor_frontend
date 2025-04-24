@@ -4,6 +4,6 @@ export type Account = {
   studentId: string;
   lessons: Lesson[];
   student: User & {
-    pricing?: Pricing;
+    pricing: Pricing | null;
   };
 };

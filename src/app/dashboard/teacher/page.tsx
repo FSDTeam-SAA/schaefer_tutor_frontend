@@ -34,7 +34,7 @@ export default async function Page() {
   const totalLessonPending = await prisma.lesson.count({
     where: {
       teacherId: cu.user.id,
-      status: "now",
+      status: "accepted",
     },
   });
 

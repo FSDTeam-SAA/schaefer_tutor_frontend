@@ -307,6 +307,8 @@ export async function makeCharge(userId: string, data: Account) {
         },
       });
 
+      revalidatePath("/dashboard/admin/account-management");
+
       return {
         success: true,
         message: "Payment successful and invoice sent",
