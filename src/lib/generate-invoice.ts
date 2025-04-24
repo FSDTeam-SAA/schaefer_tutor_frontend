@@ -8,13 +8,15 @@ function formatDateForPDF(date: Date): string {
 }
 
 // Generate PDF
+// Generate PDF
 export async function generatePaymentPdf(
   user: User,
   subscription: { name: string; price: number },
   lessons: Lesson[],
   amount: number,
   paymentIntentId: string,
-  invoiceId: string
+  invoiceId: string,
+  discountAmount: number = 0 // Add a parameter for the discount amount (default is 0)
 ): Promise<Buffer> {
   // Create a new PDF document
   const pdfDoc = await PDFDocument.create();
@@ -79,7 +81,7 @@ export async function generatePaymentPdf(
 
   // Billing details
   drawText(user.name as string, margin, currentY, { font: helveticaBoldFont });
-  drawText("United States", margin, currentY - 15);
+  // drawText("United States", margin, currentY - 15);
   drawText("Bill To:", width / 2 + margin, currentY, {
     font: helveticaBoldFont,
   });
@@ -88,7 +90,7 @@ export async function generatePaymentPdf(
 
   // Amount due
   drawText(
-    `$${amount.toFixed(2)} USD due ${formatDateForPDF(new Date())}`,
+    `$${amount.toFixed(2)} USD Paid for ${lessons.length} lessons`,
     margin,
     currentY,
     { font: helveticaBoldFont, size: 16 }
@@ -107,7 +109,6 @@ export async function generatePaymentPdf(
     ];
   });
 
-  // const cellPadding = 5;
   const columnWidths = [300, 50, 100, 100];
   const rowHeight = 20;
 
@@ -129,8 +130,10 @@ export async function generatePaymentPdf(
     currentY -= rowHeight;
   });
 
-  // Subtotal and total section
+  // Subtotal, Discount, and Total section
   currentY -= 20;
+
+  // Subtotal
   drawText("Subtotal", margin, currentY, { size: 10 });
   drawText(`$${amount.toFixed(2)}`, width - margin, currentY, {
     size: 10,
@@ -138,18 +141,31 @@ export async function generatePaymentPdf(
   });
   currentY -= 15;
 
+  // Discount (if applicable)
+  if (discountAmount > 0) {
+    drawText("Discount", margin, currentY, { size: 10 });
+    drawText(`-$${discountAmount.toFixed(2)}`, width - margin, currentY, {
+      size: 10,
+      align: "right",
+    });
+    currentY -= 15;
+  }
+
+  // Total
+  const totalAfterDiscount = amount - discountAmount;
   drawText("Total", margin, currentY, { size: 10 });
-  drawText(`$${amount.toFixed(2)}`, width - margin, currentY, {
+  drawText(`$${totalAfterDiscount.toFixed(2)}`, width - margin, currentY, {
     size: 10,
     align: "right",
   });
   currentY -= 15;
 
+  // Amount Due
   drawText("Amount Due", margin, currentY, {
     font: helveticaBoldFont,
     size: 12,
   });
-  drawText(`$${amount.toFixed(2)} USD`, width - margin, currentY, {
+  drawText(`$${totalAfterDiscount.toFixed(2)} USD`, width - margin, currentY, {
     font: helveticaBoldFont,
     size: 12,
     align: "right",

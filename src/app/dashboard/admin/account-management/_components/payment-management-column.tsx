@@ -87,7 +87,10 @@ export const PaymentColumns: ColumnDef<Account>[] = [
   {
     header: "Discount",
     cell: async ({ row }) => {
-      const discount = await calculateDiscount(row.original);
+      const discount = await calculateDiscount({
+        studentId: row.original.studentId as string,
+        totalLesson: row.original.lessons.length,
+      });
       return <p className="text-muted-foreground">${discount}</p>;
     },
   },

@@ -2,9 +2,12 @@
 
 import { auth } from "@/auth";
 import { getSubscriptionById } from "@/data/user";
+import PaymentReceiptEmail from "@/email-templates/payment-reciept";
 import { backendClient } from "@/lib/edgestore.config";
 import { generatePaymentPdf } from "@/lib/generate-invoice";
+import { calculateDiscount } from "@/lib/payment";
 import { prisma } from "@/lib/prisma";
+import { resend } from "@/lib/resend";
 import { stripe } from "@/lib/stripe";
 import { Account } from "@/types/account";
 import { revalidatePath } from "next/cache";
@@ -188,11 +191,18 @@ export async function makeCharge(userId: string, data: Account) {
   }
 
   const isIndividual = subscription.name === "Individual lessons";
-  const amount = isIndividual
+  let amount = isIndividual
     ? totalLessons * subscription.price
     : totalLessons >= 4
       ? totalLessons * subscription.price
       : 4 * subscription.price;
+
+  const discount = await calculateDiscount({
+    studentId: data.studentId as string,
+    totalLesson: data.lessons.length,
+  });
+
+  amount = amount - discount;
 
   try {
     const now = new Date();
@@ -243,7 +253,7 @@ export async function makeCharge(userId: string, data: Account) {
       payment_method: stripePaymentMethodId,
       off_session: true,
       confirm: true,
-      description: `Payment for ${totalLessons} lesson(s)`,
+      description: `Payment for ${totalLessons} lesson(s) with $${discount} discount`,
       metadata: {
         userId,
         totalLessons: totalLessons.toString(),
@@ -273,9 +283,10 @@ export async function makeCharge(userId: string, data: Account) {
         user,
         subscription,
         lessons,
-        amount,
+        amount + discount,
         paymentIntent.id,
-        invoice.id
+        invoice.id,
+        discount
       );
 
       const pdfBlob = new Blob([pdfBuffer], { type: "application/pdf" });
@@ -288,7 +299,7 @@ export async function makeCharge(userId: string, data: Account) {
         },
       });
 
-      await prisma.paymentHistory.create({
+      const paymentHistoryRes = await prisma.paymentHistory.create({
         data: {
           studentId: userId,
           paymentIntentId: paymentIntent.id,
@@ -297,7 +308,35 @@ export async function makeCharge(userId: string, data: Account) {
           paymentForDate: lastDayOfPreviousMonth,
           totalLessonsPaidFor: totalLessons,
           edgePdfUrl: res.url,
+          amount: amount + discount,
+          discount: discount,
         },
+      });
+
+      // send email
+      const to = data.student.email as string;
+      const studentName = data.student.name as string;
+      const month = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
+        lastDayOfPreviousMonth
+      );
+      const year = lastDayOfPreviousMonth.getFullYear().toString();
+      const lessonCount = data.lessons.length;
+      const unitPrice = subscription.price;
+
+      await resend.emails.send({
+        from: `Schaefer Tutor <support@schaefer-tutoring.com>`,
+        to: [to],
+        subject: `Your Schaefer Tutor Payment Receipt for ${month} ${year}`,
+        react: PaymentReceiptEmail({
+          studentName,
+          month,
+          year,
+          lessonCount,
+          unitPrice,
+          discount,
+          total: amount + discount,
+          receiptUrl: `${process.env.AUTH_URL}/api/reciept/${paymentHistoryRes.id}`,
+        }),
       });
 
       revalidatePath("/dashboard/admin/account-management");
