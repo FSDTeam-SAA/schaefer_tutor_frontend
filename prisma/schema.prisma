@@ -28,7 +28,8 @@ model User {
   stripeCustomerId      String?
   stripePaymentMethodId String?
 
-  subjects String[]
+  subjects       String[]
+  paymentHistory PaymentHistory[]
 
   // Relations for lessons
   teacherLessons Lesson[] @relation(name: "TeacherLessons")
@@ -249,6 +250,24 @@ model Pricing {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model PaymentHistory {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  studentId           String   @db.ObjectId
+  paymentIntentId     String
+  invoiceId           String
+  invoicePdfUrl       String?
+  paymentForDate      DateTime
+  totalLessonsPaidFor Int
+
+  student User @relation(fields: [studentId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([studentId])
+  @@index([paymentForDate])
 }
 
 model DiscountRules {

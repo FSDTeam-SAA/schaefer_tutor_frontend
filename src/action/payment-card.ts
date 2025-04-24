@@ -1,8 +1,10 @@
 "use server";
 
 import { auth } from "@/auth";
+import { getSubscriptionById } from "@/data/user";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
+import { Account } from "@/types/account";
 import { revalidatePath } from "next/cache";
 
 export async function savePaymentMethod(pmid: string) {
@@ -173,6 +175,135 @@ export async function saveSepaPayment() {
     return {
       success: false,
       message: "An error occurred while processing your request",
+    };
+  }
+}
+
+export async function makeCharge(userId: string, data: Account) {
+  const lessons = data.lessons;
+  const totalLessons = lessons.length;
+  const subscriptionId = data.student.pricingId;
+
+  const subscription = await getSubscriptionById(subscriptionId as string);
+  if (!subscription) {
+    return {
+      success: false,
+      message: "Subscription not found",
+    };
+  }
+
+  const isIndividual = subscription.name === "Individual lessons";
+  const amount = isIndividual
+    ? totalLessons * subscription.price
+    : totalLessons >= 4
+      ? totalLessons * subscription.price
+      : 4 * subscription.price;
+
+  try {
+    const now = new Date();
+    const lastDayOfPreviousMonth = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      0
+    );
+
+    const user = await prisma.user.findFirst({ where: { id: userId } });
+    if (!user) {
+      return { success: false, message: "User not found" };
+    }
+
+    const { stripeCustomerId, stripePaymentMethodId } = user;
+    if (!stripeCustomerId || !stripePaymentMethodId) {
+      return {
+        success: false,
+        message: "Stripe customer or payment method not set up",
+      };
+    }
+
+    await stripe.paymentMethods.attach(stripePaymentMethodId, {
+      customer: stripeCustomerId,
+    });
+
+    await stripe.customers.update(stripeCustomerId, {
+      invoice_settings: {
+        default_payment_method: stripePaymentMethodId,
+      },
+    });
+
+    await Promise.all(
+      lessons.map((lesson) =>
+        stripe.invoiceItems.create({
+          customer: stripeCustomerId,
+          amount: Math.round(subscription.price * 100),
+          currency: "usd",
+          description: `Lesson on ${lesson.date.toISOString().split("T")[0]} (${lesson.time})`,
+        })
+      )
+    );
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100),
+      currency: "usd",
+      customer: stripeCustomerId,
+      payment_method: stripePaymentMethodId,
+      off_session: true,
+      confirm: true,
+      description: `Payment for ${totalLessons} lesson(s)`,
+      metadata: {
+        userId,
+        totalLessons: totalLessons.toString(),
+        subscriptionType: subscription.name,
+      },
+    });
+
+    if (paymentIntent.status === "succeeded") {
+      const invoice = await stripe.invoices.create({
+        customer: stripeCustomerId,
+        auto_advance: true,
+        collection_method: "charge_automatically",
+        metadata: {
+          userId,
+          totalLessons: totalLessons.toString(),
+        },
+      });
+
+      if (!invoice.id) throw new Error("Invoice ID is undefined");
+
+      await stripe.invoices.finalizeInvoice(invoice.id);
+
+      const invoiceDetails = await stripe.invoices.retrieve(invoice.id);
+
+      await prisma.paymentHistory.create({
+        data: {
+          studentId: userId,
+          paymentIntentId: paymentIntent.id,
+          invoiceId: invoice.id,
+          invoicePdfUrl: invoiceDetails.invoice_pdf || null,
+          paymentForDate: lastDayOfPreviousMonth,
+          totalLessonsPaidFor: totalLessons, // Make sure this column exists in your DB
+        },
+      });
+
+      return {
+        success: true,
+        message: "Payment successful and invoice sent",
+        paymentIntentId: paymentIntent.id,
+        invoiceId: invoice.id,
+        invoicePdfUrl: invoiceDetails.invoice_pdf,
+        totalLessonsPaidFor: totalLessons,
+      };
+    } else {
+      return {
+        success: false,
+        message: `Payment failed with status: ${paymentIntent.status}`,
+      };
+    }
+  } catch (error) {
+    console.error("Error processing payment:", error);
+    return {
+      success: false,
+      message: "An error occurred while processing the payment",
+      errorDetails: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
