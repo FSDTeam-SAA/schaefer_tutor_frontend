@@ -42,11 +42,6 @@ export async function POST(req: NextRequest) {
     }
 
     const stripeCustomerDeta = customerResponse as Stripe.Customer;
-    const metaDataOfCustomer = stripeCustomerDeta.metadata;
-
-    console.log({ metaDataOfCustomer });
-    const meta = setupIntent.metadata;
-    console.log({ meta });
 
     if (!paymentMethodId) {
       console.warn("Missing paymentMethodId in setup_intent.succeeded");
