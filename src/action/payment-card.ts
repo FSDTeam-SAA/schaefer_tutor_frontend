@@ -154,7 +154,7 @@ export async function saveSepaPayment(pricingId: string) {
       mode: "setup",
       customer: customerId,
       success_url: `${process.env.AUTH_URL}/success/payment/${cu.user.id}/${pricingId}`,
-      cancel_url: "https://example.com/cancel",
+      cancel_url: `${process.env.AUTH_URL}/payment-cancel/${pricingId}`,
     });
 
     // Step 5: Return the session URL to the client
