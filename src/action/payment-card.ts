@@ -2,6 +2,8 @@
 
 import { auth } from "@/auth";
 import { getSubscriptionById } from "@/data/user";
+import { backendClient } from "@/lib/edgestore.config";
+import { generatePaymentPdf } from "@/lib/generate-invoice";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { Account } from "@/types/account";
@@ -273,6 +275,26 @@ export async function makeCharge(userId: string, data: Account) {
 
       const invoiceDetails = await stripe.invoices.retrieve(invoice.id);
 
+      // Generate custom PDF receipt
+      const pdfBuffer = await generatePaymentPdf(
+        user,
+        subscription,
+        lessons,
+        amount,
+        paymentIntent.id,
+        invoice.id
+      );
+
+      const pdfBlob = new Blob([pdfBuffer], { type: "application/pdf" });
+
+      // Upload to Edge Store
+      const res = await backendClient.publicFiles.upload({
+        content: { blob: pdfBlob, extension: "pdf" },
+        options: {
+          temporary: false, // or true if you want temporary files
+        },
+      });
+
       await prisma.paymentHistory.create({
         data: {
           studentId: userId,
@@ -280,7 +302,8 @@ export async function makeCharge(userId: string, data: Account) {
           invoiceId: invoice.id,
           invoicePdfUrl: invoiceDetails.invoice_pdf || null,
           paymentForDate: lastDayOfPreviousMonth,
-          totalLessonsPaidFor: totalLessons, // Make sure this column exists in your DB
+          totalLessonsPaidFor: totalLessons,
+          edgePdfUrl: res.url,
         },
       });
 
@@ -290,6 +313,7 @@ export async function makeCharge(userId: string, data: Account) {
         paymentIntentId: paymentIntent.id,
         invoiceId: invoice.id,
         invoicePdfUrl: invoiceDetails.invoice_pdf,
+        customReceiptUrl: res.url, // Include the Cloudinary URL in the response
         totalLessonsPaidFor: totalLessons,
       };
     } else {

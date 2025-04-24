@@ -260,6 +260,7 @@ model PaymentHistory {
   invoicePdfUrl       String?
   paymentForDate      DateTime
   totalLessonsPaidFor Int
+  edgePdfUrl          String?
 
   student User @relation(fields: [studentId], references: [id])
 
