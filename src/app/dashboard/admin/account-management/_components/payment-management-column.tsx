@@ -3,9 +3,11 @@ import {
   getAllRecomendationByStudentId,
   getSubscriptionById,
 } from "@/data/user";
+import { calculateDiscount } from "@/lib/payment";
 import { Account } from "@/types/account";
 import { ColumnDef } from "@tanstack/react-table";
 import { toast } from "sonner";
+import MakeChargeAction from "./make-charge-action";
 
 export const PaymentColumns: ColumnDef<Account>[] = [
   {
@@ -40,23 +42,19 @@ export const PaymentColumns: ColumnDef<Account>[] = [
       const subscriptionId = row.original.student.pricingId;
       const subscription = await getSubscriptionById(subscriptionId as string);
 
-      if (!subscription) {
-        toast.error("Subscription not found on payment column");
-        return;
-      }
-      return <Badge>{subscription.name}</Badge>;
+      return <Badge>{subscription?.name ?? ""}</Badge>;
     },
   },
   {
     header: "Amount",
     cell: async ({ row }) => {
       const totalLesson = row.original.lessons.length;
+
       const subscriptionId = row.original.student.pricingId;
       const subscription = await getSubscriptionById(subscriptionId as string);
 
       if (!subscription) {
         toast.error("Subscription not found on payment column");
-        return;
       }
 
       const isIndividual = subscription?.name === "Individual lessons";
@@ -67,9 +65,9 @@ export const PaymentColumns: ColumnDef<Account>[] = [
         amount = totalLesson * subscription.price;
       } else {
         if (totalLesson >= 4) {
-          amount = totalLesson * subscription.price;
+          amount = totalLesson * (subscription?.price ?? 0);
         } else {
-          amount = 4 * subscription.price;
+          amount = 4 * (subscription?.price ?? 0);
         }
       }
 
@@ -87,7 +85,14 @@ export const PaymentColumns: ColumnDef<Account>[] = [
     },
   },
   {
+    header: "Discount",
+    cell: async ({ row }) => {
+      const discount = await calculateDiscount(row.original);
+      return <p className="text-muted-foreground">${discount}</p>;
+    },
+  },
+  {
     header: "Action",
-    cell: () => <></>,
+    cell: ({ row }) => <MakeChargeAction data={row.original} />,
   },
 ];

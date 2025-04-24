@@ -23,7 +23,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SubmitButton } from "@/components/ui/submit-button";
-import { isPastDateAndTime } from "@/lib/lessonUtils";
 import { cn } from "@/lib/utils";
 import { LessonCreateSchema, lessonCreateSchema } from "@/schemas/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -79,15 +78,15 @@ export default function LessonCreateForm({
   const router = useRouter();
 
   function onSubmit(data: LessonCreateSchema) {
-    const isPastTImeSelected = isPastDateAndTime(data.date, data.time);
+    // const isPastTImeSelected = isPastDateAndTime(data.date, data.time);
 
     // Show warning if the selected date and time are in the past
-    if (isPastTImeSelected) {
-      toast.warning(
-        "The selected date and time are in the past. Please choose a future date and time."
-      );
-      return; // Exit early to prevent further processing
-    }
+    // if (isPastTImeSelected) {
+    //   toast.warning(
+    //     "The selected date and time are in the past. Please choose a future date and time."
+    //   );
+    //   return; // Exit early to prevent further processing
+    // }
 
     if (initialData) {
       startTransition(() => {
@@ -198,9 +197,9 @@ export default function LessonCreateForm({
                         field.onChange(date);
                       }}
                       initialFocus
-                      disabled={(date) =>
-                        date < new Date(new Date().setHours(0, 0, 0, 0))
-                      }
+                      // disabled={(date) =>
+                      //   date < new Date(new Date().setHours(0, 0, 0, 0))
+                      // }
                     />
                   </PopoverContent>
                 </Popover>

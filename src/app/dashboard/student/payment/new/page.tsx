@@ -12,7 +12,7 @@ const Page = () => {
 
   const onGo = () => {
     startTransition(() => {
-      saveSepaPayment().then((res) => {
+      saveSepaPayment("").then((res) => {
         if (!res.success) {
           toast.error(res.message);
           return;
