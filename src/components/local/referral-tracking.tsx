@@ -83,7 +83,7 @@ const ReferralTracking = ({ sevenDays, month, year, today }: Props) => {
 
   return (
     <div className="">
-      <div className="rounded-[16px] bg-[#F8F5F2] p-[24px] md:p-[32px] lg:p-[40px]">
+      <div className="rounded-[16px] border border-input p-[24px] md:p-[32px] lg:p-[40px]">
         <h4 className="pb-[32px] text-lg font-medium leading-[21px] text-[#1F2937] md:pb-[40px] md:text-xl md:leading-[24px]">
           Referral Tracking
         </h4>
@@ -92,11 +92,11 @@ const ReferralTracking = ({ sevenDays, month, year, today }: Props) => {
 
         <div>
           <h6 className="text-lg font-semibold leading-[21px] text-[#1F2937]">
-            Refer People To Vegan Collective
+            Refer People To Schafer-turoring Platform
           </h6>
           <p className="pt-[8px] text-[10px] text-base font-normal leading-[19px] text-[#4B5563]">
-            Share your unique QR code to invite others to Vegan Collective.
-            You’ll earn a share of profits from every transaction they make!
+            Share your unique QR code to invite others to Schafer-turoring
+            Platform.
           </p>
           <div className="pb-[78px] pt-[32px] md:pb-0">
             <Button
