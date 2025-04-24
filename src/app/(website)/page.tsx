@@ -63,13 +63,6 @@ const NachhilfeLandingPage = async () => {
       <Testmonial />
 
       {/* Footer */}
-
-      <a
-        href="https://res.cloudinary.com/dzlrpspps/raw/upload/v1745474607/payment_receipts/receipt_6809be3a492588022e144ded_in_1RHIsZPoiM4NGdAHvTKuEZjP_1745474606638.pdf"
-        download="receipt.pdf"
-      >
-        Download Receipt
-      </a>
     </div>
   );
 };

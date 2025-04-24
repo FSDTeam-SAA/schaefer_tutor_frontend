@@ -1,6 +1,5 @@
 "use client";
-import { buyPricing } from "@/action/pricing";
-import CardInfoContainer from "@/app/dashboard/student/payment/_components/cards/card-info-container";
+import { saveSepaPayment } from "@/action/payment-card";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,7 +7,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -60,14 +59,13 @@ export function PricingCard({
 
     // handle success
     startTransition(() => {
-      buyPricing(planId).then((res) => {
+      saveSepaPayment(planId).then((res) => {
         if (!res.success) {
           toast.error(res.message);
           return;
         }
 
-        toast.success(res.message);
-        setOpen(false);
+        window.location.href = res.sessionUrl as string;
       });
     });
   };
@@ -121,20 +119,14 @@ export function PricingCard({
         <Dialog open={open} onOpenChange={setOpen}>
           {isLoggedIn ? (
             <>
-              <DialogTrigger asChild>
-                <Button
-                  className="w-full"
-                  disabled={
-                    isLoading || isAlreadyPurchased || !!alreadyPurchased
-                  }
-                  variant={isAlreadyPurchased ? "outline" : "default"}
-                >
-                  {isAlreadyPurchased ? "Already Booked" : "Book now"}
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <CardInfoContainer onSuccess={onBuy} />
-              </DialogContent>
+              <Button
+                className="w-full"
+                disabled={isLoading || isAlreadyPurchased || !!alreadyPurchased}
+                variant={isAlreadyPurchased ? "outline" : "default"}
+                onClick={onBuy}
+              >
+                {isAlreadyPurchased ? "Already Booked" : "Book now"}
+              </Button>
             </>
           ) : (
             <Button
