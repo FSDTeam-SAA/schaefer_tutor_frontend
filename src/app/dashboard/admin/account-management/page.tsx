@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { Account } from "@/types/account";
-import { Lesson, User } from "@prisma/client";
+import { Lesson, Pricing, User } from "@prisma/client";
 import PaymentManagementTable from "./_components/Payment-management-table";
 
 // Transform raw MongoDB response into TypeScript-compatible format
@@ -9,7 +9,7 @@ function transformToAccounts(rawData: any[]): Account[] {
   return rawData.map((item) => {
     const studentId = item.studentId.$oid; // Extract student ID
     const lessons = item.lessons.map(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      //eslint-disable-next-line @typescript-eslint/no-explicit-any
       (lesson: any): Lesson => ({
         id: lesson._id.$oid,
         teacherId: lesson.teacherId.$oid,
@@ -23,7 +23,7 @@ function transformToAccounts(rawData: any[]): Account[] {
       })
     );
 
-    const student: User = {
+    const student: User & { pricing: Pricing } = {
       id: item.student._id.$oid,
       name: item.student.name ?? null,
       email: item.student.email ?? null,
@@ -44,6 +44,29 @@ function transformToAccounts(rawData: any[]): Account[] {
       stripePaymentMethodId: item.student.stripePaymentMethodId ?? null, // Optional
       calendarLink: item.student.calendarLink ?? null, // Default or transformed value
       subjects: item.student.subjects ?? [], // Default to an empty array
+      pricing: item.student.pricing
+        ? {
+            id: item.student.pricing._id.$oid,
+            name: item.student.pricing.name,
+            price: item.student.pricing.price,
+            unit: item.student.pricing.unit,
+            description: item.student.pricing.description,
+            isRecommended: item.student.pricing.isRecommended,
+            features: item.student.pricing.features,
+            createdAt: new Date(item.student.pricing.createdAt.$date),
+            updatedAt: new Date(item.student.pricing.updatedAt.$date),
+          }
+        : {
+            id: "",
+            name: "",
+            price: 0,
+            unit: "default", // Replace with a valid default value for Unit
+            description: "",
+            isRecommended: false,
+            features: [],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          }, // Provide a default value when pricing is null
     };
 
     return {
@@ -70,10 +93,6 @@ const Page = async () => {
         {
           $match: {
             status: "carried_out", // Filter only completed lessons
-            // date: {
-            //   $gte: lastMonthStart,
-            //   $lte: lastMonthEnd,
-            // },
           },
         },
         {
@@ -92,6 +111,20 @@ const Page = async () => {
         },
         {
           $unwind: "$studentDetails", // Unwind the array created by $lookup
+        },
+        {
+          $lookup: {
+            from: "Pricing", // Join with the Pricing collection
+            localField: "studentDetails.pricingId", // Field in the User collection
+            foreignField: "_id", // Field in the Pricing collection
+            as: "studentDetails.pricing", // Output field for the pricing data
+          },
+        },
+        {
+          $unwind: {
+            path: "$studentDetails.pricing",
+            preserveNullAndEmptyArrays: true, // Keep users without pricing
+          },
         },
         {
           $project: {
