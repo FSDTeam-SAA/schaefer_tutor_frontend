@@ -19,14 +19,6 @@ export const ConfirmFreeTrialReqColumns: ColumnDef<FreeTrialWithSlot>[] = [
     header: "Name",
   },
   {
-    accessorKey: "phone",
-    header: "Phone",
-  },
-  {
-    accessorKey: "studentEmail",
-    header: "Email",
-  },
-  {
     accessorKey: "subject",
     header: "Subject",
   },
