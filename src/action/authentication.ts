@@ -1,4 +1,5 @@
 "use server";
+import { PasswordFormValues } from "@/app/(auth)/reset-password/checked/_components/final-reset-pass-form";
 import { auth, signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { loginSchema, LoginValues, registrationSchema } from "@/schemas/schema";
@@ -285,4 +286,82 @@ export async function isGreetinsDone() {
   });
 
   return user?.isGreeting ?? true;
+}
+
+export async function verifyEmail(email: string) {
+  const user = await prisma.user.findFirst({
+    where: { email },
+  });
+
+  if (!user) {
+    return {
+      success: false,
+      message: "User not found",
+    };
+  }
+
+  return {
+    success: true,
+    message: "User exists",
+    data: user,
+  };
+}
+
+export async function resetPassword(data: PasswordFormValues) {
+  try {
+    // Step 1: Find the user by email
+    const user = await prisma.user.findFirst({
+      where: {
+        email: data.email,
+      },
+    });
+
+    // If the user does not exist, return an error
+    if (!user) {
+      return {
+        success: false,
+        message: "User with this email does not exist.",
+      };
+    }
+
+    // Step 2: Verify that the previous password matches the stored hashed password
+    const isPasswordMatch = await bcrypt.compare(
+      data.currentPassword,
+      user.password
+    );
+
+    if (!isPasswordMatch) {
+      return {
+        success: false,
+        message: "The current password is incorrect.",
+      };
+    }
+
+    // Step 3: Hash the new password using bcrypt
+    const saltRounds = 10; // You can adjust the number of salt rounds as needed
+    const hashedPassword = await bcrypt.hash(data.newPassword, saltRounds);
+
+    // Step 4: Update the user's password in the database
+    await prisma.user.update({
+      where: {
+        id: user.id, // Assuming the user has a unique `id` field
+      },
+      data: {
+        password: hashedPassword, // Update the password field with the hashed value
+      },
+    });
+
+    // Step 5: Return a success response
+    return {
+      success: true,
+      message: "Password reset successfully.",
+    };
+  } catch (error) {
+    // Handle any errors that occur during the process
+    console.error("Error resetting password:", error);
+    return {
+      success: false,
+      message: "An error occurred while resetting the password.",
+    };
+  }
 }

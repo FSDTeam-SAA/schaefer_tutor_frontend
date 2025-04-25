@@ -1,5 +1,6 @@
 "use client";
 import { DataTable } from "@/components/ui/data-table";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { Input } from "@/components/ui/input";
 import { FreeTrialReq } from "@prisma/client";
 import {
@@ -45,6 +46,12 @@ const FreeTrialRequestTableContainer = ({ data, columns }: Props) => {
         />
       </div>
       <DataTable columns={columns} table={table} />
+
+      {data.length > 10 && (
+        <div className="mt-4">
+          <DataTablePagination table={table} />
+        </div>
+      )}
     </div>
   );
 };
