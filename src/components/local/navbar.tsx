@@ -19,7 +19,7 @@ const Navbar = async () => {
           <div className="flex items-center space-x-4">
             {!session && (
               <Button effect="gooeyLeft" asChild>
-                <Link href="/sign-up">Free trial lesson</Link>
+                <a href="#pricing">Free trial lesson</a>
               </Button>
             )}
 
