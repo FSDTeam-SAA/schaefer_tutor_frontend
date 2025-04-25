@@ -1,3 +1,4 @@
+import { PricingSection } from "@/app/(website)/_components/pricing-section";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
@@ -48,6 +49,10 @@ const SchuelerDashboard = async () => {
     },
   });
 
+  const userPurchased = pricing?.pricingId;
+
+  const subscription = await prisma.pricing.findMany();
+
   return (
     <div>
       <StudentDashboardStats
@@ -56,6 +61,14 @@ const SchuelerDashboard = async () => {
         plannedSessions={totalPlannedLesson}
         pricing={pricing?.pricing || undefined}
       />
+
+      {!userPurchased && (
+        <PricingSection
+          data={subscription}
+          isLoggedIn={!!cu}
+          purchasedPlan={userPurchased as string}
+        />
+      )}
     </div>
   );
 };

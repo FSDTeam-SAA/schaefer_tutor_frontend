@@ -21,6 +21,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
 import {
   Popover,
   PopoverContent,
@@ -178,8 +179,12 @@ export default function TrialLessonForm({ subjects }: Props) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Phone</FormLabel>
-                      <FormControl>
-                        <Input placeholder="+49 123 456789" {...field} />
+                      <FormControl className="w-full">
+                        <PhoneInput
+                          placeholder="Enter your phone number"
+                          {...field}
+                          defaultCountry="TR"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

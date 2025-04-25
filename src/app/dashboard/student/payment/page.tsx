@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import CardConnectRemoveContainer from "./_components/cards/card-connet-remove-container";
+import PaymentHistoryTable from "./_components/payment-history-table";
 
 const Page = async () => {
   const cu = await auth();
@@ -18,6 +19,12 @@ const Page = async () => {
     },
   });
 
+  const paymentHistory = await prisma.paymentHistory.findMany({
+    where: {
+      studentId: cu.user.id,
+    },
+  });
+
   return (
     <div className="container mx-auto py-8">
       <div className="flex items-center justify-between mb-8">
@@ -26,6 +33,10 @@ const Page = async () => {
       </div>
 
       <div className="bg-white rounded-lg border shadow-sm"></div>
+
+      <div>
+        <PaymentHistoryTable data={paymentHistory} />
+      </div>
     </div>
   );
 };

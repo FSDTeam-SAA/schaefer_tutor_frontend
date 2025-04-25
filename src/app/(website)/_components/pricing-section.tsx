@@ -11,7 +11,7 @@ export function PricingSection({ data, isLoggedIn, purchasedPlan }: Props) {
   if (data.length === 0) return;
 
   return (
-    <section className="py-16 px-4">
+    <section className="py-16 px-4" id="pricing">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-3xl font-bold mb-12">Our prices</h2>
 
