@@ -19,7 +19,8 @@ import AdminDashboardOverviewCards from "./_components/dashboard/dash-cards";
 // ];
 
 export default async function AdminDashboard() {
-  const now = new Date(); // Current date
+  const now = new Date();
+
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1); // First day of the current month
   const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1); // First day of the next month
 

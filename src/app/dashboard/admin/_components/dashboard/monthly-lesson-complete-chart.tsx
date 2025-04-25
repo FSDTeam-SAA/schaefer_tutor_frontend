@@ -31,7 +31,12 @@ const monthlyData = [
   { name: "Dec", lessons: 91, users: 48 },
 ];
 
-const MonthlyLessonCompleteChart = () => {
+interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any[];
+}
+
+const MonthlyLessonCompleteChart = ({}: Props) => {
   return (
     <Card className="col-span-1">
       <CardHeader>

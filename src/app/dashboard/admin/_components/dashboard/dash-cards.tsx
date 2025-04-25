@@ -10,8 +10,6 @@ import {
 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import MonthlyLessonCompleteChart from "./monthly-lesson-complete-chart";
-import MonthlyUserregistrationChart from "./monthly-user-registration-chart";
 
 interface Props {
   stripeBalane: number;
@@ -102,10 +100,10 @@ const AdminDashboardOverviewCards = ({
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-4 md:grid-cols-2">
-        <MonthlyLessonCompleteChart />
+      {/* <div className="grid gap-4 md:grid-cols-2">
+        <MonthlyLessonCompleteChart data={monthlyLessonData} />
         <MonthlyUserregistrationChart />
-      </div>
+      </div> */}
     </div>
   );
 };
