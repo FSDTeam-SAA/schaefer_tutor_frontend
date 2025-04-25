@@ -1,6 +1,17 @@
 import { PricingSection } from "@/app/(website)/_components/pricing-section";
 import { auth } from "@/auth";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
+import { Star } from "lucide-react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import StudentDashboardStats from "./_components/student-dashboard-stats";
 
@@ -68,6 +79,30 @@ const SchuelerDashboard = async () => {
           isLoggedIn={!!cu}
           purchasedPlan={userPurchased as string}
         />
+      )}
+
+      {totalCompletedLesson > 3 && (
+        <Card className="border rounded-lg hover:shadow-md transition-shadow mx-4">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center">
+              <Star className="h-5 w-5 text-blue-500 mr-2" />
+              Rate Your Experience
+            </CardTitle>
+            <CardDescription>Share your overall satisfaction</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-2">
+            <p className="text-sm">
+              Rate your tutoring sessions and overall platform experience.
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button className="w-full bg-blue-500 hover:bg-blue-600" asChild>
+              <Link href="/feedback" className="w-full">
+                Give Rating
+              </Link>
+            </Button>
+          </CardFooter>
+        </Card>
       )}
     </div>
   );

@@ -37,10 +37,10 @@ export default async function RootLayout({
         <EdgeStoreProvider>
           <AppProvider>
             <StripeElementsWrapper>{children}</StripeElementsWrapper>
+            <NProgress />
           </AppProvider>
         </EdgeStoreProvider>
         <Toaster richColors closeButton />
-        <NProgress />
       </body>
     </html>
   );
