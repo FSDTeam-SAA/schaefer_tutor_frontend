@@ -21,6 +21,7 @@ import * as z from "zod";
 
 import { RegistrationAction } from "@/action/authentication";
 import { PasswordInput } from "@/components/ui/password-input";
+import { PhoneInput } from "@/components/ui/phone-input";
 import {
   Select,
   SelectContent,
@@ -62,7 +63,7 @@ export default function RegistrationForm() {
             toast.error(res.message || "Registration failed.");
           } else {
             toast.success("Registration successful!");
-            router.push("/"); // 👈 Use router to navigate
+            router.push("/sign-up/confirmation"); // 👈 Use router to navigate
           }
         })
         .catch((err) => {
@@ -112,10 +113,10 @@ export default function RegistrationForm() {
                   Phone
                 </FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Enter Phone "
+                  <PhoneInput
+                    placeholder="Enter your phone number"
                     {...field}
-                    className="h-[48px] rounded-[10px] border-[1px] border-[#F4F0EB] font-inter"
+                    defaultCountry="TR"
                   />
                 </FormControl>
 

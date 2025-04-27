@@ -25,7 +25,7 @@ const Hero = () => {
             erreichen.
           </p>
 
-          <p className="text-lg text-gray-600 mb-6">
+          {/* <p className="text-lg text-gray-600 mb-6">
             <span className="font-bold text-primary">Schäfer Tutoring</span> ist
             ein Zusammenschluss von Studenten aus Mannheim, die ihre
             akademischen Stärken nutzen, um Schülern{" "}
@@ -33,7 +33,7 @@ const Hero = () => {
               qualitativ hochwertige Nachhilfe
             </span>{" "}
             anzubieten.
-          </p>
+          </p> */}
           <p className="text-lg text-gray-600 mb-6">
             Unser Team aus Fachexperten verschiedener Disziplinen bietet{" "}
             <span className="font-bold text-primary">
