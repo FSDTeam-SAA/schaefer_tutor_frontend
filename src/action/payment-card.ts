@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { getSubscriptionById } from "@/data/user";
-import PaymentReceiptEmail from "@/email-templates/payment-reciept";
+import PaymentReceiptEmail from "@/emails/payment-reciept";
 import { backendClient } from "@/lib/edgestore.config";
 import { generatePaymentPdf } from "@/lib/generate-invoice";
 import { calculateDiscount } from "@/lib/payment";

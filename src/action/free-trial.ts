@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import FreeTrialConfirmationEmail from "@/email-templates/free-trial-confirmation-email";
+import FreeTrialConfirmationEmail from "@/emails/free-trial-confirmation-email";
 import { prisma } from "@/lib/prisma";
 import { resend } from "@/lib/resend";
 import { FreeTrialSchemaType } from "@/schemas/schema";

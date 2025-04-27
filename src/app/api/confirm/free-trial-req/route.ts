@@ -1,4 +1,4 @@
-import TutorMeetEmail from "@/email-templates/tutor-meet-email";
+import TutorMeetEmail from "@/emails/tutor-meet-email";
 import { nylas } from "@/lib/nylas";
 import { prisma } from "@/lib/prisma";
 import { resend } from "@/lib/resend";

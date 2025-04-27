@@ -171,7 +171,7 @@ export default function RegistrationForm() {
             name="role"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nothing</FormLabel>
+                <FormLabel>As</FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger className="w-full">
