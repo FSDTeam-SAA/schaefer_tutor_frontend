@@ -1,7 +1,9 @@
 "use server";
 import { PasswordFormValues } from "@/app/(auth)/reset-password/checked/_components/final-reset-pass-form";
 import { auth, signIn } from "@/auth";
+import EmailVerification from "@/emails/email-verification";
 import { prisma } from "@/lib/prisma";
+import { resend } from "@/lib/resend";
 import { loginSchema, LoginValues, registrationSchema } from "@/schemas/schema";
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
@@ -69,6 +71,17 @@ export async function RegistrationAction(data: Val, ref: string | null) {
     }
   }
 
+  // send email to the student
+  await resend.emails.send({
+    from: "Schaefer Tutor <support@schaefer-tutoring.com>",
+    to: [newUser.email],
+    subject: "Your Free Trial Session with Schaefer Tutor",
+    react: EmailVerification({
+      username: newUser?.name ?? "",
+      verificationUrl: `${process.env.AUTH_URL}/email-verification/${newUser.id}`,
+    }),
+  });
+
   return { success: true, message: "Registration successfully!" }; // 👈 Explicit response
 }
 
@@ -92,6 +105,13 @@ export async function LoginAction(data: LoginValues) {
     return {
       success: false,
       message: "User Not Found!",
+    };
+  }
+
+  if (!user.emailVerified) {
+    return {
+      success: false,
+      message: "Email not verified. Please verify your email to proceed.",
     };
   }
 
