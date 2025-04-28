@@ -18,7 +18,6 @@ import {
   CreditCard,
   UserCircle,
 } from "lucide-react";
-import Link from "next/link";
 
 interface WelcomeMessageProps {
   role: "teacher" | "student";
@@ -98,11 +97,14 @@ export default function WelcomeMessage({
               </div>
             </CardContent>
             <CardFooter className="flex flex-col sm:flex-row gap-3">
-              <Button className="w-full sm:w-auto">
-                <Link href="/api/auth/nylas" className="flex w-full">
-                  <Calendar className="mr-2 h-4 w-4" />
-                  Connect Calendar
-                </Link>
+              <Button
+                variant="outline"
+                className="w-full sm:w-auto"
+                onClick={() => {
+                  window.location.href = "/dashboard/teacher/profile";
+                }}
+              >
+                Complete Your Profile
               </Button>
             </CardFooter>
           </TabsContent>
