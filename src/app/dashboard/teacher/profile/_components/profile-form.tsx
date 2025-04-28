@@ -154,12 +154,18 @@ const TeacherProfileForm = ({ user, subjects }: Props) => {
                     }}
                     className="h-full w-full rounded-full relative flex justify-center items-center"
                   >
-                    <Image
-                      src={field.value || "/placeholder.jpg"}
-                      alt="profile"
-                      fill
-                      className="rounded-full object-cover bg-gray-100"
-                    />
+                    {field.value ? (
+                      <Image
+                        src={field.value || "/placeholder.jpg"}
+                        alt="profile+"
+                        fill
+                        className="rounded-full object-cover bg-gray-100"
+                      />
+                    ) : (
+                      <div className="rounded-full object-cover bg-gray-100 w-full h-full flex justify-center items-center">
+                        Profile +
+                      </div>
+                    )}
                   </motion.div>
                   {imageLoader && (
                     <Loader2 className="animate-spin h-5 w-5 absolute" />

@@ -3,7 +3,6 @@
 // Package Imports
 import { motion } from "framer-motion";
 import { Loader2, Pencil, Save } from "lucide-react";
-import Image from "next/image";
 import { useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 
@@ -28,6 +27,7 @@ import {
 } from "@/schemas/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "@prisma/client";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -144,12 +144,18 @@ const ProfileForm = ({ user }: Props) => {
                     }}
                     className="h-full w-full rounded-full relative flex justify-center items-center"
                   >
-                    <Image
-                      src={field.value || "/placeholder.jpg"}
-                      alt="profile"
-                      fill
-                      className="rounded-full object-cover bg-gray-100"
-                    />
+                    {field.value ? (
+                      <Image
+                        src={field.value || "/placeholder.jpg"}
+                        alt="profile+"
+                        fill
+                        className="rounded-full object-cover bg-gray-100"
+                      />
+                    ) : (
+                      <div className="rounded-full object-cover bg-gray-100 w-full h-full flex justify-center items-center">
+                        Profile +
+                      </div>
+                    )}
                   </motion.div>
                   {imageLoader && (
                     <Loader2 className="animate-spin h-5 w-5 absolute" />
