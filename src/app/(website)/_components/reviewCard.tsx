@@ -1,8 +1,12 @@
-import { Review } from "@prisma/client";
+import { Badge } from "@/components/ui/badge";
+import { Review, Role } from "@prisma/client";
+import Image from "next/image";
 
 interface ReviewWithUser extends Review {
   user: {
     name: string | null;
+    image: string | null;
+    role: Role;
   };
 }
 
@@ -11,16 +15,24 @@ interface Props {
 }
 
 const ReviewCard = ({ data }: Props) => {
+  const image =
+    data.user.image ??
+    "https://res.cloudinary.com/dgnustmny/image/upload/v1746088509/user-profile-icon-front-side_thwogs.jpg";
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <div className="flex items-center mb-4">
-        <div className="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
-          {data.user.name ? data.user.name.charAt(0).toUpperCase() : "U"}
+        <div className="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold relative">
+          <Image src={image} fill alt="profile" className="rounded-full" />
         </div>
         <div className="ml-4">
-          <h3 className="text-lg font-semibold text-gray-900">
-            {data.user.name || "Unknown User"}
-          </h3>
+          <div className="flex items-center gap-x-2">
+            <h3 className="text-lg font-semibold text-gray-900">
+              {data.user.name || "Unknown User"}
+            </h3>
+            <Badge>{data.user.role}</Badge>
+          </div>
+
           <div className="flex text-yellow-400">
             {[...Array(5)].map((_, i) => (
               <svg

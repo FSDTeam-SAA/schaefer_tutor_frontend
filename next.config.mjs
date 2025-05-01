@@ -18,6 +18,10 @@ const nextConfig = {
         hostname: "res-console.cloudinary.com",
         protocol: "https",
       },
+      {
+        hostname: "unsplash.com",
+        protocol: "https"
+      }
     ],
   },
 };
