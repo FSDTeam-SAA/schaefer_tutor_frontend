@@ -9,19 +9,6 @@ export const createReview = async (rating: number, message: string) => {
 
   if (!session?.user) redirect("/login");
 
-  // Check if the user is a student
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { role: true },
-  });
-
-  if (user?.role !== "student") {
-    return {
-      success: false,
-      message: "Only students can submit reviews.",
-    };
-  }
-
   try {
     await prisma.review.create({
       data: {
