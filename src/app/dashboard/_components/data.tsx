@@ -84,6 +84,13 @@ export const teacherDashboardTabLists = [
   },
   {
     id: generateRandomId(),
+    path: "/dashboard/teacher/refferal",
+    icon: <Waypoints className="h-4 w-4" />,
+    linkText: "Refferal",
+    roles: ["teacher"],
+  },
+  {
+    id: generateRandomId(),
     path: "/dashboard/teacher/free-trial-requests",
     icon: <GitPullRequestDraft className="h-4 w-4" />,
     linkText: "Trial Requests",

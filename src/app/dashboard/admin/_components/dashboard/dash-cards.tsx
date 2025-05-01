@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  CalendarDays,
-  Clock,
-  DollarSign,
-  FileText,
-  UserPlus,
-  Users,
-} from "lucide-react";
+import { CalendarDays, Clock, FileText, UserPlus, Users } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -21,7 +14,6 @@ interface Props {
 }
 
 const AdminDashboardOverviewCards = ({
-  stripeBalane,
   lessonCompleted,
   lessonsPending,
   totalFreeTrial,
@@ -31,7 +23,7 @@ const AdminDashboardOverviewCards = ({
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 ">
-        <Card>
+        {/* <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total Balance (Stripe)
@@ -41,7 +33,7 @@ const AdminDashboardOverviewCards = ({
           <CardContent>
             <div className="text-2xl font-bold">${stripeBalane}</div>
           </CardContent>
-        </Card>
+        </Card> */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -64,8 +56,6 @@ const AdminDashboardOverviewCards = ({
             <div className="text-2xl font-bold">{lessonsPending}</div>
           </CardContent>
         </Card>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -77,6 +67,8 @@ const AdminDashboardOverviewCards = ({
             <div className="text-2xl font-bold">{totalFreeTrial}</div>
           </CardContent>
         </Card>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">

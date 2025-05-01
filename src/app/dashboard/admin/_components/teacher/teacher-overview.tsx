@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/table";
 import { prisma } from "@/lib/prisma";
 import { User } from "@prisma/client";
+import Image from "next/image";
 import TeacherAction from "./teacher-action";
 export interface Teacher {
   id: string;
@@ -60,7 +61,7 @@ export default async function TeacherOverview() {
               <TableHead>name</TableHead>
               <TableHead>e-mail</TableHead>
               <TableHead>Fan</TableHead>
-              <TableHead>Number of students</TableHead>
+              {/* <TableHead>Number of students</TableHead> */}
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -72,7 +73,22 @@ export default async function TeacherOverview() {
                 }
               ) => (
                 <TableRow key={teacher.id}>
-                  <TableCell>{teacher.name}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-x-2">
+                      <div className="h-[40px] w-[40px] rounded-full relative">
+                        <Image
+                          src={
+                            teacher.image ??
+                            "https://res.cloudinary.com/drdztqgcx/image/upload/v1745807697/blue-circle-with-white-user_78370-4707_ltslck.avif"
+                          }
+                          alt={teacher.name as string}
+                          className="rounded-full"
+                          fill
+                        />
+                      </div>
+                      <p>{teacher.name}</p>
+                    </div>
+                  </TableCell>
                   <TableCell>{teacher.email}</TableCell>
                   <TableCell>
                     <div className="space-x-2">
@@ -81,7 +97,7 @@ export default async function TeacherOverview() {
                       </Badge>
                     </div>
                   </TableCell>
-                  <TableCell>{teacher.uniqueStudentCount}</TableCell>
+                  {/* <TableCell>{teacher.uniqueStudentCount}</TableCell> */}
                   <TableCell>
                     <TeacherAction subjects={subjects} data={teacher} />
                   </TableCell>
