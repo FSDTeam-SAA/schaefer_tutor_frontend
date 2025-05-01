@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
     console.log("ERROR SOMETHING WENT WRONG", error);
   }
 
-  revalidatePath("dashboard/teacher/free-trial-requests");
+  revalidatePath("/dashboard/teacher/free-trial-requests");
 
   redirect("/dashboard/teacher/free-trial-requests");
 }
