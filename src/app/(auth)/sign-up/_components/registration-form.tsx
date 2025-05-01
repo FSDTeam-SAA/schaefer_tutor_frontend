@@ -22,15 +22,6 @@ import * as z from "zod";
 import { RegistrationAction } from "@/action/authentication";
 import { PasswordInput } from "@/components/ui/password-input";
 import { PhoneInput } from "@/components/ui/phone-input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { registrationSchema } from "@/schemas/schema";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -48,6 +39,8 @@ export default function RegistrationForm() {
   const form = useForm<z.infer<typeof registrationSchema>>({
     resolver: zodResolver(registrationSchema),
   });
+
+  const role = form.watch("role");
 
   useEffect(() => {
     return () => {
@@ -83,6 +76,40 @@ export default function RegistrationForm() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="mx-auto max-w-3xl space-y-[16px] pt-[24px]"
         >
+          <FormField
+            control={form.control}
+            name="role"
+            render={({ field }) => (
+              <FormItem className="">
+                <FormLabel>Account type: </FormLabel>
+                <FormControl>
+                  <div className="flex justify-between gap-x-5">
+                    <Button
+                      variant={role === "student" ? "default" : "outline"}
+                      className="w-full"
+                      type="button"
+                      onClick={() => {
+                        field.onChange("student");
+                      }}
+                    >
+                      Student
+                    </Button>
+                    <Button
+                      variant={role === "teacher" ? "default" : "outline"}
+                      className="w-full"
+                      type="button"
+                      onClick={() => {
+                        field.onChange("teacher");
+                      }}
+                    >
+                      Teacher
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="name"
@@ -166,7 +193,7 @@ export default function RegistrationForm() {
             )}
           />
 
-          <FormField
+          {/* <FormField
             control={form.control}
             name="role"
             render={({ field }) => (
@@ -188,7 +215,7 @@ export default function RegistrationForm() {
                 </FormControl>
               </FormItem>
             )}
-          />
+          /> */}
 
           <Button
             type="submit"
