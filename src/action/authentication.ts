@@ -75,7 +75,7 @@ export async function RegistrationAction(data: Val, ref: string | null) {
   await resend.emails.send({
     from: "Schaefer Tutor <support@schaefer-tutoring.com>",
     to: [newUser.email],
-    subject: "Your Free Trial Session with Schaefer Tutor",
+    subject: "Please verify your email address",
     react: EmailVerification({
       username: newUser?.name ?? "",
       verificationUrl: `${process.env.AUTH_URL}/email-verification/${newUser.id}`,

@@ -10,9 +10,9 @@ generator client {
 model User {
   id            String          @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
-  email         String         @unique
+  email         String          @unique
   password      String
-  emailVerified DateTime?
+  emailVerified String?
   image         String?
   phone         String?
   grantId       String?
@@ -261,8 +261,8 @@ model PaymentHistory {
   paymentForDate      DateTime
   totalLessonsPaidFor Int
   edgePdfUrl          String?
-  amount Int
-  discount Int
+  amount              Int
+  discount            Int
 
   student User @relation(fields: [studentId], references: [id])
 

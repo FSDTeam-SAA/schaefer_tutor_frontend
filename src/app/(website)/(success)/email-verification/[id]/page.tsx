@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,12 +16,13 @@ export default async function EmailVerificationConfirmed({
 }: {
   params: { id: string };
 }) {
+  const currentUser = await auth();
   const user = await prisma.user.update({
     where: {
       id: params.id,
     },
     data: {
-      emailVerified: new Date(),
+      emailVerified: new Date().toString(),
     },
   });
 
@@ -51,9 +53,15 @@ export default async function EmailVerificationConfirmed({
         </CardContent>
 
         <CardFooter className="flex flex-col space-y-3 px-6 pb-6">
-          <Button asChild variant="outline" className="w-full">
-            <Link href="/login">Login Now</Link>
-          </Button>
+          {currentUser ? (
+            <Button asChild variant="outline" className="w-full">
+              <Link href={`/dashboard/${user.role}`}>Dashboard</Link>
+            </Button>
+          ) : (
+            <Button asChild variant="outline" className="w-full">
+              <Link href="/login">Login Now</Link>
+            </Button>
+          )}
         </CardFooter>
       </Card>
     </div>

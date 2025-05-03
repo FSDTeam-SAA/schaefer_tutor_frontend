@@ -82,6 +82,10 @@ const ProfileForm = ({ user }: Props) => {
         }
         // handle success
         router.refresh();
+
+        if (res.emailChanged) {
+          toast.warning(res.message);
+        }
       });
     });
   };
