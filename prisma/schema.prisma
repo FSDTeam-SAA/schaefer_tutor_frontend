@@ -12,7 +12,7 @@ model User {
   name          String?
   email         String          @unique
   password      String
-  emailVerified String?
+  emailVerified DateTime?
   image         String?
   phone         String?
   grantId       String?

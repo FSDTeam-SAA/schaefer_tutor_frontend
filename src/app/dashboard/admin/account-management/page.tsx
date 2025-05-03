@@ -50,7 +50,7 @@ function transformToAccounts(rawData: RowDataType[]): Account[] {
         email: item.student.email ?? null,
         password: item.student.password ?? "", // Optional
         emailVerified: item.student.emailVerified
-          ? new Date(item.student.emailVerified).toISOString()
+          ? new Date(item.student.emailVerified)
           : null, // Optional
         image: item.student.image ?? null, // Optional
         phone: item.student.phone ?? null, // Optional
