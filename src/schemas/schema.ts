@@ -53,7 +53,7 @@ export const StudentProfileSchema = z.object({
 export const teacherProfileSchema = z.object({
   name: z.string().optional(),
   image: z.string().optional(),
-  email: z.string().optional(),
+  email: z.string().email().optional(),
   phone: z.string().optional(),
   subjects: z.array(z.string()),
 });

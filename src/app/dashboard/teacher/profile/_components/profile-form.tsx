@@ -92,6 +92,10 @@ const TeacherProfileForm = ({ user, subjects }: Props) => {
         }
         // handle success
         router.refresh();
+
+        if (res.emailChanged) {
+          toast.warning(res.message);
+        }
       });
     });
   };
@@ -222,7 +226,7 @@ const TeacherProfileForm = ({ user, subjects }: Props) => {
                     placeholder="Primary Email"
                     {...field}
                     className="disabled:opacity-70 h-[40px]"
-                    disabled={true}
+                    disabled={!editable}
                   />
                 </FormControl>
               </FormItem>
