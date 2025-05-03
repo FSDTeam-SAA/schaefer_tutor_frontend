@@ -7,6 +7,8 @@ const Testmonial = async () => {
       user: {
         select: {
           name: true,
+          image: true,
+          role: true,
         },
       },
     },
