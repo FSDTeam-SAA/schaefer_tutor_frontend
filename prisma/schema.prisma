@@ -164,6 +164,7 @@ model Review {
   userId    String   @db.ObjectId
   rating    Int
   message   String
+  approved  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
