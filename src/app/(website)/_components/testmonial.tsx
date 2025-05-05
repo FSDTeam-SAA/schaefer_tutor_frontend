@@ -3,6 +3,9 @@ import ReviewCard from "./reviewCard";
 
 const Testmonial = async () => {
   const reviews = await prisma.review.findMany({
+    where: {
+      approved: true,
+    },
     include: {
       user: {
         select: {
