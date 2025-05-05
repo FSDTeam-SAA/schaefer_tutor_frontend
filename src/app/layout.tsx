@@ -1,3 +1,4 @@
+import { CrispProvider } from "@/components/providers/crisp-provider";
 import NProgress from "@/components/providers/NProgress";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 import AppProvider from "@/provider/AppProvider";
@@ -38,6 +39,7 @@ export default async function RootLayout({
           <AppProvider>
             <StripeElementsWrapper>{children}</StripeElementsWrapper>
             <NProgress />
+            <CrispProvider />
           </AppProvider>
         </EdgeStoreProvider>
         <Toaster richColors closeButton />
