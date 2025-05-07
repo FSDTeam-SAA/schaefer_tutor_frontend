@@ -37,13 +37,31 @@ model User {
   reviews        Review[]
   pricing        Pricing? @relation(fields: [pricingId], references: [id])
 
+  // Relation for connection
+  studentConnections Connection[] @relation("StudentConnection")
+  teacherConnections Connection[] @relation("TeacherConnection")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-enum RequestStatus {
+model Connection {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  studentId String           @db.ObjectId
+  teacherId String           @db.ObjectId
+  status    ConnectionStatus @default(pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student User @relation("StudentConnection", fields: [studentId], references: [id])
+  teacher User @relation("TeacherConnection", fields: [teacherId], references: [id])
+}
+
+enum ConnectionStatus {
   pending
-  accepted
+  approved
   rejected
 }
 
