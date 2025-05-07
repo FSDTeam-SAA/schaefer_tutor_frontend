@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import MyTeacherContainer from "./_components/my-teacher-container";
 import ProfileForm from "./_components/profile-form";
 
 const Page = async () => {
@@ -16,6 +17,10 @@ const Page = async () => {
   return (
     <div>
       <ProfileForm user={user!} />
+
+      <div className="mt-8 border rounded-lg p-6">
+        <MyTeacherContainer />
+      </div>
     </div>
   );
 };
