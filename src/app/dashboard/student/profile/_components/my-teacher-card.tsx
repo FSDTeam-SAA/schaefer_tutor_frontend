@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 
-const MyStudentCard = () => {
+const MyTeacherCard = () => {
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-4">
@@ -22,4 +22,4 @@ const MyStudentCard = () => {
   );
 };
 
-export default MyStudentCard;
+export default MyTeacherCard;
