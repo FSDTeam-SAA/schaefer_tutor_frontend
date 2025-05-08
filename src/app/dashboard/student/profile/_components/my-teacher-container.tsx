@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
+import Link from "next/link";
 import MyTeacherCard from "./my-teacher-card";
 
 // Sample student data - replace with your actual data source
@@ -34,10 +35,12 @@ export default function MyTeacherContainer() {
   return (
     <div className="w-full py-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">My Students</h2>
-        <Button className="bg-blue-600 hover:bg-blue-700">
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Request a student
+        <h2 className="text-2xl font-bold">My Teachers</h2>
+        <Button className="bg-blue-600 hover:bg-blue-700" asChild>
+          <Link href="/dashboard/student/profile/request-teacher">
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Request a student
+          </Link>
         </Button>
       </div>
 

@@ -1,10 +1,10 @@
 import { CrispProvider } from "@/components/providers/crisp-provider";
-import NProgress from "@/components/providers/NProgress";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 import AppProvider from "@/provider/AppProvider";
 import StripeElementsWrapper from "@/provider/element-wrapper";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -38,7 +38,7 @@ export default async function RootLayout({
         <EdgeStoreProvider>
           <AppProvider>
             <StripeElementsWrapper>{children}</StripeElementsWrapper>
-            <NProgress />
+            <NextTopLoader showSpinner={false} />
             <CrispProvider />
           </AppProvider>
         </EdgeStoreProvider>
