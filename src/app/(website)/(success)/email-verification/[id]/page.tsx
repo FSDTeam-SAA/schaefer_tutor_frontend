@@ -22,7 +22,7 @@ export default async function EmailVerificationConfirmed({
       id: params.id,
     },
     data: {
-      emailVerified: new Date().toString(),
+      emailVerified: new Date(),
     },
   });
 

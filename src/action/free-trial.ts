@@ -106,6 +106,8 @@ export const OnAcceptFreeTrialReq = async ({
         sessionTime: time,
         sessionSubject: updatedRequest.subject,
         confirmationLink: `${process.env.AUTH_URL}/api/confirm/free-trial-req?reqId=${updatedRequest.id}`,
+        teacherImageUrl: currentUser.user.image ?? "",
+        teacherSubject: updatedRequest.subject,
       }),
     });
 

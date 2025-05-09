@@ -3,7 +3,7 @@ import { StudentColumns } from "./student-column";
 import StudentTableContainer from "./student-table-container-";
 
 const StudentManagement = async () => {
-  const teachers = await prisma.user.findMany({
+  const student = await prisma.user.findMany({
     where: {
       role: "student",
     },
@@ -14,7 +14,7 @@ const StudentManagement = async () => {
 
   return (
     <div className="my-5">
-      <StudentTableContainer data={teachers ?? []} columns={StudentColumns} />
+      <StudentTableContainer data={student ?? []} columns={StudentColumns} />
     </div>
   );
 };

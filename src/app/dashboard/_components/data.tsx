@@ -5,6 +5,7 @@ import {
   CloudDownload,
   DollarSign,
   GitPullRequestDraft,
+  Heart,
   HomeIcon,
   User,
   Wallet,
@@ -146,6 +147,13 @@ export const adminDashboardTabLists = [
     path: "/dashboard/admin/account-management",
     icon: <User className="h-4 w-4" />,
     linkText: "Account",
+    roles: ["admin"],
+  },
+  {
+    id: generateRandomId(),
+    path: "/dashboard/admin/reviews",
+    icon: <Heart className="h-4 w-4" />,
+    linkText: "Reviews",
     roles: ["admin"],
   },
   {
