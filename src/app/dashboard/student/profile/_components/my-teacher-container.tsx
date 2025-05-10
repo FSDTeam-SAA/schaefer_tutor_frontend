@@ -39,7 +39,7 @@ export default function MyTeacherContainer() {
         <Button className="bg-blue-600 hover:bg-blue-700" asChild>
           <Link href="/dashboard/student/profile/request-teacher">
             <PlusCircle className="mr-2 h-4 w-4" />
-            Request a student
+            Request a teacher
           </Link>
         </Button>
       </div>

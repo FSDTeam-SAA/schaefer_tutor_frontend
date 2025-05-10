@@ -50,3 +50,45 @@ export async function connectStudent({ studentId }: Props) {
     message: "Assign request sent successfully",
   };
 }
+
+export async function connectTeacher(teacherId: string) {
+  const cu = await auth();
+
+  if (!cu?.user) redirect("/login");
+  if (cu.user.role !== "student") {
+    return {
+      success: false,
+      message: "Unauthorized access",
+    };
+  }
+
+  const studentId = cu.user.id as string;
+  const existing = await prisma.connection.findFirst({
+    where: {
+      teacherId,
+      studentId,
+    },
+  });
+
+  if (existing) {
+    return {
+      success: false,
+      message: "Assign request already exists",
+    };
+  }
+
+  await prisma.connection.create({
+    data: {
+      teacherId,
+      studentId,
+      status: "pending",
+    },
+  });
+
+  revalidatePath("/dashboard/student/profile/request-teacher");
+
+  return {
+    success: true,
+    message: "Assign request sent successfully",
+  };
+}
