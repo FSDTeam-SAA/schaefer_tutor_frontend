@@ -1,12 +1,26 @@
+"use server";
 // https://chatgpt.com/share/681b168e-0070-8012-8386-731eec90e1fe
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 interface Props {
-  teacherId: string;
   studentId: string;
 }
 
-export async function sendConnectionRequest({ teacherId, studentId }: Props) {
+export async function connectStudent({ studentId }: Props) {
+  const cu = await auth();
+
+  if (!cu?.user) redirect("/login");
+  if (cu.user.role !== "teacher") {
+    return {
+      success: false,
+      message: "Unauthorized access",
+    };
+  }
+
+  const teacherId = cu.user.id as string;
   const existing = await prisma.connection.findFirst({
     where: {
       teacherId,
@@ -17,7 +31,7 @@ export async function sendConnectionRequest({ teacherId, studentId }: Props) {
   if (existing) {
     return {
       success: false,
-      message: "Connection request already exists",
+      message: "Assign request already exists",
     };
   }
 
@@ -29,8 +43,10 @@ export async function sendConnectionRequest({ teacherId, studentId }: Props) {
     },
   });
 
+  revalidatePath("/dashboard/teacher/profile/student-request");
+
   return {
     success: true,
-    message: "Connection request sent successfully",
+    message: "Assign request sent successfully",
   };
 }

@@ -1,7 +1,8 @@
+"use client";
+
+import { connectStudent } from "@/action/connection";
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -9,9 +10,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Lesson, User } from "@prisma/client";
 import Image from "next/image";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
 
 type StudentWithLessons = User & {
   studentLessons: Lesson[];
@@ -22,10 +26,25 @@ interface Props {
 }
 
 const StudentRequestCard = ({ data }: Props) => {
+  const [open, setOpen] = useState(false);
+  const [pending, startTransition] = useTransition();
+
+  const onRequest = () => {
+    startTransition(() => {
+      connectStudent({ studentId: data.id as string }).then((res) => {
+        if (!res.success) {
+          toast.error(res.message);
+          return;
+        }
+
+        toast.success(res.message);
+      });
+    });
+  };
   return (
-    <AlertDialog>
-      <AlertDialogTrigger>
-        <Card className="overflow-hidden">
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
+        <Card className="overflow-hidden shadow-none hover:shadow-md duration-300 transition-all cursor-pointer">
           <CardContent className="p-4">
             <div className="flex flex-col items-center text-center">
               <div className="relative w-20 h-20 rounded-full overflow-hidden mb-3 border-2 border-gray-200">
@@ -57,8 +76,12 @@ const StudentRequestCard = ({ data }: Props) => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <Button variant="secondary" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
+          <Button onClick={onRequest} disabled={pending}>
+            Continue
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
