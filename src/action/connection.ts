@@ -2,6 +2,7 @@
 // https://chatgpt.com/share/681b168e-0070-8012-8386-731eec90e1fe
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { Role } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -159,6 +160,102 @@ export async function RejectConnection(id: string) {
     return {
       success: false,
       message: "An error occurred while rejecting the connection",
+    };
+  }
+}
+
+export async function RemoveTeacherConnection(teacherId: string) {
+  const cu = await auth();
+
+  if (!cu || cu.user.role !== ("student" as Role)) {
+    return {
+      success: false,
+      message:
+        "Unauthorized action. Only students can remove teacher connections.",
+    };
+  }
+
+  const connection = await prisma.connection.findFirst({
+    where: {
+      teacherId,
+      studentId: cu.user.id,
+    },
+  });
+
+  if (!connection) {
+    return {
+      success: false,
+      message: "No connection found between you and the specified teacher.",
+    };
+  }
+
+  try {
+    await prisma.connection.delete({
+      where: {
+        id: connection.id,
+      },
+    });
+
+    // Revalidate both profiles
+    revalidatePath("/dashboard/student/profile");
+    revalidatePath("/dashboard/teacher/profile");
+
+    return {
+      success: true,
+      message: "Connection with the teacher has been successfully removed.",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Failed to disconnect. Please try again later.",
+    };
+  }
+}
+
+export async function RemoveStudentConnection(studentId: string) {
+  const cu = await auth();
+
+  if (!cu || cu.user.role !== ("teacher" as Role)) {
+    return {
+      success: false,
+      message:
+        "Unauthorized action. Only students can remove teacher connections.",
+    };
+  }
+
+  const connection = await prisma.connection.findFirst({
+    where: {
+      teacherId: cu.user.id,
+      studentId,
+    },
+  });
+
+  if (!connection) {
+    return {
+      success: false,
+      message: "No connection found between you and the specified teacher.",
+    };
+  }
+
+  try {
+    await prisma.connection.delete({
+      where: {
+        id: connection.id,
+      },
+    });
+
+    // Revalidate both profiles
+    revalidatePath("/dashboard/student/profile");
+    revalidatePath("/dashboard/teacher/profile");
+
+    return {
+      success: true,
+      message: "Connection with the teacher has been successfully removed.",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Failed to disconnect. Please try again later.",
     };
   }
 }
