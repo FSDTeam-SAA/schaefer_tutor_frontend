@@ -8,6 +8,7 @@ import {
   Heart,
   HomeIcon,
   User,
+  Users2Icon,
   Wallet,
   Waypoints,
 } from "lucide-react";
@@ -119,6 +120,13 @@ export const adminDashboardTabLists = [
     path: "/dashboard/admin/student-management",
     icon: <User className="h-4 w-4" />,
     linkText: "Student",
+    roles: ["admin"],
+  },
+  {
+    id: generateRandomId(),
+    path: "/dashboard/admin/assignment",
+    icon: <Users2Icon className="h-4 w-4" />,
+    linkText: "Assignment",
     roles: ["admin"],
   },
   {

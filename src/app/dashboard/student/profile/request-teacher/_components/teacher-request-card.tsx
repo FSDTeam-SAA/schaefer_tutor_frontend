@@ -1,7 +1,7 @@
+"use client";
+import { connectTeacher } from "@/action/connection";
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -9,9 +9,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Lesson, User } from "@prisma/client";
 import Image from "next/image";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
 
 type StudentWithLessons = User & {
   teacherLessons: Lesson[];
@@ -22,8 +25,24 @@ interface Props {
 }
 
 const TeacherRequestCard = ({ data }: Props) => {
+  const [open, setOpen] = useState(false);
+  const [pending, startTransition] = useTransition();
+
+  const onRequest = () => {
+    startTransition(() => {
+      connectTeacher(data.id).then((res) => {
+        if (!res.success) {
+          toast.error(res.message);
+          return;
+        }
+
+        toast.success(res.message);
+      });
+    });
+  };
+
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger>
         <Card className="overflow-hidden">
           <CardContent className="p-4">
@@ -59,8 +78,10 @@ const TeacherRequestCard = ({ data }: Props) => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <Button variant="secondary">Cancel</Button>
+          <Button onClick={onRequest} disabled={pending}>
+            Continue
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
