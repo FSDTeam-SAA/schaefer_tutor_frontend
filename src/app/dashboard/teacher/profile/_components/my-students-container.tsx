@@ -1,37 +1,22 @@
 import { Button } from "@/components/ui/button";
+import { Lesson, User } from "@prisma/client";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import MyStudentCard from "./my-student-card";
 
 // Sample student data - replace with your actual data source
-const students = [
-  {
-    id: 1,
-    name: "Alex Johnson",
-    image: "/placeholder.svg?height=80&width=80",
-    completedLessons: 12,
-  },
-  {
-    id: 2,
-    name: "Sarah Williams",
-    image: "/placeholder.svg?height=80&width=80",
-    completedLessons: 8,
-  },
-  {
-    id: 3,
-    name: "Michael Chen",
-    image: "/placeholder.svg?height=80&width=80",
-    completedLessons: 15,
-  },
-  {
-    id: 4,
-    name: "Emma Davis",
-    image: "/placeholder.svg?height=80&width=80",
-    completedLessons: 6,
-  },
-];
 
-export default function MyStudentContainer() {
+export interface LessonWithUser extends User {
+  studentLessons: Lesson[];
+}
+
+// Props interface for your component
+
+interface Props {
+  data: LessonWithUser[];
+}
+
+export default async function MyStudentContainer({ data }: Props) {
   return (
     <div className="w-full py-6">
       <div className="flex items-center justify-between mb-6">
@@ -44,11 +29,13 @@ export default function MyStudentContainer() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {students.map((student) => (
-          <MyStudentCard key={student.id} />
-        ))}
-      </div>
+      {data.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {data.map((student) => (
+            <MyStudentCard key={student.id} data={student} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
