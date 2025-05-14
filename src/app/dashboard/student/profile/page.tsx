@@ -14,12 +14,35 @@ const Page = async () => {
       id: currentUser.user.id,
     },
   });
+
+  const myConnections = await prisma.connection.findMany({
+    where: {
+      studentId: currentUser.user.id,
+    },
+    select: {
+      teacherId: true,
+    },
+  });
+
+  const teacherIds = myConnections.map((item) => item.teacherId);
+
+  const myTeachers = await prisma.user.findMany({
+    where: {
+      id: {
+        in: teacherIds,
+      },
+    },
+    include: {
+      teacherLessons: true,
+    },
+  });
+
   return (
     <div>
       <ProfileForm user={user!} />
 
       <div className="mt-8 border rounded-lg p-6">
-        <MyTeacherContainer />
+        <MyTeacherContainer data={myTeachers} />
       </div>
     </div>
   );
