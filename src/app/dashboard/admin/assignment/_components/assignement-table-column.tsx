@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
+import AssignmentTableAction from "./assignment-table-action";
 import { ConnectionWithUsers } from "./assignment-table-container";
 
 export const defaultImage =
@@ -93,5 +94,9 @@ export const AssignmentTableColumn: ColumnDef<ConnectionWithUsers>[] = [
         </Badge>
       );
     },
+  },
+  {
+    id: "Action",
+    cell: ({ row }) => <AssignmentTableAction data={row.original} />,
   },
 ];

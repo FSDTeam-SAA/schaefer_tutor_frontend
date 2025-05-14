@@ -6,7 +6,7 @@ const Page = async () => {
   const allRequests = await prisma.connection.findMany({
     where: {
       status: {
-        in: ["pending", "rejected"],
+        in: ["pending"],
       },
     },
     include: {

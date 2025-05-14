@@ -92,3 +92,73 @@ export async function connectTeacher(teacherId: string) {
     message: "Assign request sent successfully",
   };
 }
+
+export async function ApproveConnection(id: string) {
+  const cu = await auth();
+
+  if (!cu || cu.user.role !== "admin") {
+    return {
+      success: false,
+      message: "Unauthorized",
+    };
+  }
+
+  try {
+    const updatedConnection = await prisma.connection.update({
+      where: {
+        id,
+      },
+      data: {
+        status: "approved", // Make sure this matches the enum value in your Prisma schema
+      },
+    });
+
+    revalidatePath("/dashboard/admin/assignment");
+
+    return {
+      success: true,
+      message: "Connection approved successfully",
+      data: updatedConnection,
+    };
+  } catch (error) {
+    console.error("Failed to approve connection:", error);
+    return {
+      success: false,
+      message: "An error occurred while approving the connection",
+    };
+  }
+}
+
+export async function RejectConnection(id: string) {
+  const cu = await auth();
+
+  if (!cu || cu.user.role !== "admin") {
+    return {
+      success: false,
+      message: "Unauthorized",
+    };
+  }
+
+  try {
+    const updatedConnection = await prisma.connection.update({
+      where: { id },
+      data: {
+        status: "rejected", // Make sure this matches your Prisma enum value
+      },
+    });
+
+    revalidatePath("/dashboard/admin/assignment");
+
+    return {
+      success: true,
+      message: "Connection rejected successfully",
+      data: updatedConnection,
+    };
+  } catch (error) {
+    console.error("Failed to reject connection:", error);
+    return {
+      success: false,
+      message: "An error occurred while rejecting the connection",
+    };
+  }
+}
