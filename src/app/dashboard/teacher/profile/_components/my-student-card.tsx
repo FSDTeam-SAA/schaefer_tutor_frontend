@@ -1,5 +1,21 @@
+"use client";
+
+import { RemoveStudentConnection } from "@/action/connection";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
 import { LessonWithUser } from "./my-students-container";
 
 interface Props {
@@ -10,6 +26,21 @@ const defaultImage =
   "https://res.cloudinary.com/dgnustmny/image/upload/v1746088509/user-profile-icon-front-side_thwogs.jpg";
 
 const MyStudentCard = ({ data }: Props) => {
+  const [open, setOpen] = useState(false);
+  const [pending, startTransition] = useTransition();
+
+  const onRemove = () => {
+    startTransition(() => {
+      RemoveStudentConnection(data.id).then((res) => {
+        if (!res.success) {
+          toast.error(res.message);
+          return;
+        }
+
+        toast.success(res.message);
+      });
+    });
+  };
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-4">
@@ -27,6 +58,33 @@ const MyStudentCard = ({ data }: Props) => {
             {data.studentLessons.length} completed lessons
           </p>
         </div>
+
+        <AlertDialog open={open} onOpenChange={setOpen}>
+          <AlertDialogTrigger asChild className="w-full mt-2">
+            <Button variant="destructive" size="sm" className="w-full">
+              Remove
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your
+                account and remove your data from our servers.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
+              <Button
+                variant="destructive"
+                onClick={onRemove}
+                disabled={pending}
+              >
+                Continue
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
     </Card>
   );
