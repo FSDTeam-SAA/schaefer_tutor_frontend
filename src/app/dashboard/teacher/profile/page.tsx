@@ -16,12 +16,36 @@ const Page = async () => {
   });
 
   const subjects = await prisma.subject.findMany();
+
+  // my students
+  const myStudents = await prisma.connection.findMany({
+    where: {
+      teacherId: currentUser.user.id as string,
+    },
+    select: {
+      studentId: true,
+    },
+  });
+
+  const studentsIds = myStudents.map((item) => item.studentId);
+
+  const studentsInfo = await prisma.user.findMany({
+    where: {
+      id: {
+        in: studentsIds,
+      },
+    },
+    include: {
+      studentLessons: true,
+    },
+  });
+
   return (
     <div>
       <TeacherProfileForm user={user!} subjects={subjects} />
 
       <div className="mt-8 border rounded-lg p-6">
-        <MyStudentContainer />
+        <MyStudentContainer data={studentsInfo} />
       </div>
     </div>
   );
