@@ -259,3 +259,58 @@ export async function RemoveStudentConnection(studentId: string) {
     };
   }
 }
+
+export const getStudentsByTeacherIdNotConeected = async (teacherId: string) => {
+  const connections = await prisma.connection.findMany({
+    where: {
+      teacherId,
+    },
+    select: {
+      studentId: true,
+    },
+  });
+
+  const studentIds = connections.map((item) => item.studentId);
+
+  const allNotConnectedStudents = await prisma.user.findMany({
+    where: {
+      id: {
+        notIn: studentIds,
+      },
+    },
+  });
+
+  return allNotConnectedStudents;
+};
+
+export const AssignFromAdmin = async (tId: string, sId: string) => {
+  const cu = await auth();
+
+  if (!cu || cu.user.role !== "admin") {
+    return {
+      success: false,
+      message: "Unauthorized access. Only admins can assign connections.",
+    };
+  }
+
+  try {
+    await prisma.connection.create({
+      data: {
+        teacherId: tId,
+        studentId: sId,
+        status: "approved",
+      },
+    });
+
+    return {
+      success: true,
+      message: "Student successfully assigned to teacher.",
+    };
+  } catch (error) {
+    console.error("AssignFromAdmin error:", error);
+    return {
+      success: false,
+      message: "Something went wrong while assigning student to teacher.",
+    };
+  }
+};
