@@ -8,8 +8,20 @@ const Page = async () => {
 
   if (!currentUser) redirect("/login");
   const subjects = await prisma.subject.findMany();
+  const myConnection = await prisma.connection.findMany({
+    where: {
+      teacherId: currentUser.user.id,
+    },
+    select: {
+      studentId: true,
+    },
+  });
+  const studentIds = myConnection.map((item) => item.studentId);
   const students = await prisma.user.findMany({
     where: {
+      id: {
+        in: studentIds,
+      },
       role: "student",
       pricingId: {
         not: null,
