@@ -20,6 +20,8 @@ interface Props {
 const PlannedHoursAction = ({ data }: Props) => {
   const [cancelPending, startTransition] = useTransition();
 
+  const status = data.status;
+
   const onCanel = () => {
     startTransition(() => {
       updateLessonStatusAction(data.id, "canceled").then((res) => {
@@ -40,7 +42,7 @@ const PlannedHoursAction = ({ data }: Props) => {
           toast.error(res.message);
           return;
         } else {
-          toast.success("Lesson caneled successfully");
+          toast.success("Lesson completed successfully");
         }
       });
     });
@@ -76,16 +78,18 @@ const PlannedHoursAction = ({ data }: Props) => {
             {cancelPending ? "Cancelling..." : "Cancel"}
           </Button>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Button
-            className="w-full"
-            size="sm"
-            onClick={onCommplete}
-            disabled={cancelPending}
-          >
-            Complete
-          </Button>
-        </DropdownMenuItem>
+        {status === "accepted" && (
+          <DropdownMenuItem asChild>
+            <Button
+              className="w-full"
+              size="sm"
+              onClick={onCommplete}
+              disabled={cancelPending}
+            >
+              Complete
+            </Button>
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
