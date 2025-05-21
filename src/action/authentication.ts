@@ -48,6 +48,7 @@ export async function RegistrationAction(data: Val, ref: string | null) {
       password: hashedPassword,
       name: validatedData.name, // Assuming name is part of registrationSchema
       role: validatedData.role, // Assuming role is part of registrationSchema`
+      phone: validatedData.phone,
     },
   });
 
