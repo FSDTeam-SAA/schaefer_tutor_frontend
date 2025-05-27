@@ -23,15 +23,15 @@ const Page = async () => {
         in: studentIds,
       },
       role: "student",
-      pricingId: {
-        not: null,
-      },
-      stripePaymentMethodId: {
-        not: null,
-      },
-      stripeCustomerId: {
-        not: null,
-      },
+      // pricingId: {
+      //   not: null,
+      // },
+      // stripePaymentMethodId: {
+      //   not: null,
+      // },
+      // stripeCustomerId: {
+      //   not: null,
+      // },
     },
   });
 
